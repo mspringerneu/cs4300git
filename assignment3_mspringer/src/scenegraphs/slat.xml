@@ -1,0 +1,16 @@
+<scene>
+    <!-- box dimensions: 1 1 1 -->
+    <instance name="box" path="models/box.obj" />
+    <!-- cylinder dimensions: 2 2 2 // radius = 1, 2 in Y-->
+    <instance name="cylinder" path="models/cylinder.obj" />
+        <transform name="slat-transform">
+            <set>
+                <scale>70 5 20</scale>
+            </set>
+            <object instanceof="box">
+                <material>
+                    <color> 0 0 1 </color>
+                </material>
+            </object>
+        </transform>
+</scene>

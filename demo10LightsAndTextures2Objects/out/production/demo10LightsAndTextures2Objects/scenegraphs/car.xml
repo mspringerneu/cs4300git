@@ -1,0 +1,164 @@
+<scene>
+	<instance name="sphere" path="models/sphere.obj" />
+	<instance name="box" path="models/box.obj" />
+	<instance name="cylinder" path="models/cylinder.obj" />
+	<instance name="cone" path="models/cone.obj" />
+	
+	<transform>
+		<set>
+			<translate>0 0 0</translate>
+		<scale> 1 1 1 </scale>
+		</set>
+		<group>
+			<group name="carbody">
+				<transform>
+					<set>
+						<translate>0 18 10</translate>
+					</set>
+					<transform name="front">
+						<set>
+							<scale>50 36 20</scale>
+						</set>
+						<object instanceof="box">
+							<material>
+								<color> 0 1 0 </color>
+							</material>
+						</object>
+					</transform>
+				</transform>
+				<transform>
+					<set>
+						<translate>0 25 -50</translate>
+					</set>
+					<transform name="back">
+						<set>
+							<scale>50 50 100</scale>
+						</set>
+						<object instanceof="box">
+							<material>
+								<color> 1 0 0 </color>
+							</material>
+						</object>
+					</transform>
+				</transform>
+			</group>
+			<group name="wheels">
+				<transform>
+					<set>
+						<translate>0 -5 0</translate>
+					</set>
+					<group name="pairs-of-wheels">
+						<transform name="front">
+							<set>
+								<translate>0 0 10</translate>
+							</set>
+							<group name="front-wheels">
+								<transform name="left-front">
+									<set>
+										<translate>-20 0 0</translate>
+										<scale>5 5 5</scale>
+										<rotate>90 0 0 1</rotate>
+									</set>
+									<object instanceof="cylinder">
+										<material>
+											<color> 0 0 1 </color>
+										</material>
+									</object>
+								</transform>
+								<transform name="right-front">
+									<set>
+										<translate>25 0 0</translate>
+										<scale>5 5 5</scale>
+										<rotate>90 0 0 1</rotate>
+									</set>
+									<object instanceof="cylinder">
+										<material>
+											<color> 0 0 1 </color>
+										</material>
+									</object>
+								</transform>
+							</group>
+						</transform>
+						<transform name="middle">
+							<set>
+								<translate>0 0 -50</translate>
+							</set>
+							<group name="middle-wheels">
+								<transform name="left-middle">
+									<set>
+										<translate>-20 0 0</translate>
+										<scale>5 5 5</scale>
+										<rotate>90 0 0 1</rotate>
+									</set>
+									<object instanceof="cylinder">
+										<material>
+											<color> 0 0 1 </color>
+										</material>
+									</object>
+								</transform>
+								<transform name="right-middle">
+									<set>
+										<translate>25 0 0</translate>
+										<scale>5 5 5</scale>
+										<rotate>90 0 0 1</rotate>
+									</set>
+									<object instanceof="cylinder">
+										<material>
+											<color> 0 0 1 </color>
+										</material>
+									</object>
+								</transform>
+							</group>
+						</transform>
+						<transform name="back">
+							<set>
+								<translate>0 0 -100</translate>
+							</set>
+							<group name="back-wheels">
+								<transform name="left-back">
+									<set>
+										<translate>-20 0 0</translate>
+										<scale>5 5 5</scale>
+										<rotate>90 0 0 1</rotate>
+									</set>
+									<object instanceof="cylinder">
+										<material>
+											<color> 0 0 1 </color>
+										</material>
+									</object>
+								</transform>
+								<transform name="right-back">
+									<set>
+										<translate>25 0 0</translate>
+										<scale>5 5 5</scale>
+										<rotate>90 0 0 1</rotate>
+									</set>
+									<object instanceof="cylinder">
+										<material>
+											<color> 0 0 1 </color>
+										</material>
+									</object>
+								</transform>
+							</group>
+						</transform>
+					</group>
+
+				</transform>
+			</group>
+		</group>
+	</transform>
+<!--
+	<transform>
+		<set>
+		<translate> 0 25 0 </translate>
+		<scale> 50 50 50 </scale>
+		</set>
+		<group>
+			<object instanceof="cone">
+				<material>
+				<color> 1 0 0 </color>
+				</material>
+			</object>			
+		</group>
+	</transform> -->
+</scene>

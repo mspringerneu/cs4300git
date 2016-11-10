@@ -1,0 +1,40 @@
+<scene>
+    <!-- box dimensions: 1 1 1 -->
+    <instance name="box" path="models/box.obj" />
+    <!-- cylinder dimensions: 2 2 2 // radius = 1, 2 in Y-->
+    <instance name="cylinder" path="models/cylinder.obj" />
+
+    <group name="wheels">
+        <transform name="left-wheel-offset">
+            <set>
+                <translate>0 0 0</translate>
+                <rotate>90 0 0 1</rotate>
+                <!--<scale>5 5 5</scale>
+                <rotate>90 0 0 1</rotate>-->
+            </set>
+            <group name="left" from="scenegraphs/wheel.xml">
+            </group>
+        </transform>
+        <transform name="right-wheel-offset">
+            <set>
+                <translate>50 0 0</translate>
+                <!--<scale>5 5 5</scale>-->
+                <rotate>-90 0 0 1</rotate>
+            </set>
+            <group name="right" from="scenegraphs/wheel.xml">
+
+            </group>
+        </transform>
+        <transform name="axle">
+            <set>
+                <rotate>-90 0 0 1</rotate>
+                <scale>1 50 1</scale>
+            </set>
+            <object instanceof="cylinder">
+                <material>
+                    <color> 0 1 1 </color>
+                </material>
+            </object>
+        </transform>
+    </group>
+</scene>

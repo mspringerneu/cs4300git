@@ -1,0 +1,1 @@
+This program extends HelloJOGL2 by showing how to display text in Qt, how to set the window to continuously redraw itself (animation loop) and how to measure frame rate

@@ -1,0 +1,71 @@
+<scene>
+    <!-- box dimensions: 1 1 1 -->
+    <instance name="box" path="models/box.obj" />
+    <!-- cylinder dimensions: 2 2 2 // radius = 1, 2 in Y-->
+    <instance name="cylinder" path="models/cylinder.obj" />
+
+    <group name="wheel">
+        <transform name="body">
+            <set>
+                <scale>10 5 10</scale>
+            </set>
+            <object instanceof="cylinder">
+                <material>
+                    <color> 0 0 1 </color>
+                </material>
+            </object>
+        </transform>
+
+        <transform name="spoke0">
+            <set>
+                <translate>0 5 0</translate>
+                <scale>10 1 1</scale>
+            </set>
+            <object instanceof="box">
+                <material>
+                    <color> 0 1 1 </color>
+                </material>
+            </object>
+        </transform>
+
+        <transform name="spoke1">
+            <set>
+                <translate>0 5 0</translate>
+                <rotate>45 0 1 0</rotate>
+                <scale>10 1 1</scale>
+            </set>
+            <object instanceof="box">
+                <material>
+                    <color> 0 1 1 </color>
+                </material>
+            </object>
+        </transform>
+
+        <transform name="spoke2">
+            <set>
+                <translate>0 5 0</translate>
+                <rotate>90 0 1 0</rotate>
+                <scale>10 1 1</scale>
+            </set>
+            <object instanceof="box">
+                <material>
+                    <color> 0 1 1 </color>
+                </material>
+            </object>
+        </transform>
+
+        <transform name="spoke3">
+            <set>
+                <translate>0 5 0</translate>
+                <rotate>135 0 1 0</rotate>
+                <scale>10 1 1</scale>
+            </set>
+            <object instanceof="box">
+                <material>
+                    <color> 0 1 1 </color>
+                </material>
+            </object>
+        </transform>
+
+    </group>
+</scene>

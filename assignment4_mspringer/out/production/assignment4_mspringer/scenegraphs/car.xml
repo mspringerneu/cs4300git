@@ -1,0 +1,108 @@
+<scene>
+	<instance name="sphere" path="models/sphere.obj" />
+	<instance name="box" path="models/box.obj" />
+	<instance name="cylinder" path="models/cylinder.obj" />
+	<instance name="cone" path="models/cone.obj" />
+	
+	<transform name="whole-car-transform">
+		<set>
+			<translate>0 0 0</translate>
+		    <scale> 1 1 1 </scale>
+		</set>
+		<group name="whole-car">
+            <group name="car-connector">
+                <transform name="connector-offset">
+                    <set>
+                        <translate>0 10 30</translate>
+                    </set>
+                    <transform name="connector-scale">
+                        <set>
+                            <scale>10 10 10</scale>
+                        </set>
+                        <object instanceof="sphere">
+                            <material>
+                                <color>1 0 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                </transform>
+            </group>
+			<group name="car-body">
+				<transform name="car-front-offset">
+					<set>
+						<translate>0 18 10</translate>
+					</set>
+					<transform name="car-front">
+						<set>
+							<scale>50 36 20</scale>
+						</set>
+						<object instanceof="box">
+							<material>
+								<color> 0 1 0 </color>
+							</material>
+						</object>
+					</transform>
+				</transform>
+				<transform name="car-main-offset">
+					<set>
+						<translate>0 25 -50</translate>
+					</set>
+					<transform name="main">
+						<set>
+							<scale>50 50 100</scale>
+						</set>
+						<object instanceof="box">
+							<material>
+								<color> 1 0 0 </color>
+							</material>
+						</object>
+					</transform>
+				</transform>
+			</group>
+			<group name="wheels">
+				<transform>
+					<set>
+						<translate>-25 -1 0</translate>
+					</set>
+					<group name="pairs-of-wheels">
+						<transform name="front-wheels-offset">
+							<set>
+								<translate>0 0 10</translate>
+							</set>
+							<group name="front" from="scenegraphs/wheel-axle.xml">
+                            </group>
+						</transform>
+                        <transform name="middle-wheels-offset">
+                            <set>
+                                <translate>0 0 -40</translate>
+                            </set>
+                            <group name="middle" from="scenegraphs/wheel-axle.xml">
+                            </group>
+                        </transform>
+                        <transform name="back-wheels-offset">
+                            <set>
+                                <translate>0 0 -90</translate>
+                            </set>
+                            <group name="back" from="scenegraphs/wheel-axle.xml">
+                            </group>
+                        </transform>
+					</group>
+				</transform>
+			</group>
+		</group>
+	</transform>
+<!--
+	<transform>
+		<set>
+		<translate> 0 25 0 </translate>
+		<scale> 50 50 50 </scale>
+		</set>
+		<group>
+			<object instanceof="cone">
+				<material>
+				<color> 1 0 0 </color>
+				</material>
+			</object>			
+		</group>
+	</transform> -->
+</scene>

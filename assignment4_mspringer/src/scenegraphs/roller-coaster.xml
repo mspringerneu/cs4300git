@@ -1,0 +1,45 @@
+<scene>
+    <instance name="sphere" path="models/sphere.obj" />
+    <instance name="box" path="models/box.obj" />
+    <instance name="cylinder" path="models/cylinder.obj" />
+    <instance name="cone" path="models/cone.obj" />
+
+    <transform>
+        <set>
+            <translate>0 0 0</translate>
+            <scale> 1 1 1 </scale>
+        </set>
+        <group name="all-cars">
+            <transform name="car0-transform">
+                <set>
+                    <translate>0 0 -630</translate>
+                </set>
+                <group name="car0" from="scenegraphs/car.xml"></group>
+            </transform>
+            <transform name="car1-transform">
+                <set>
+                    <translate>0 0 -70</translate>
+                </set>
+                <group name="car1" from="scenegraphs/car.xml"></group>
+            </transform>
+            <transform name="car2-transform">
+                <set>
+                    <translate>0 0 -210</translate>
+                </set>
+                <group name="car2" from="scenegraphs/car.xml"></group>
+            </transform>
+            <transform name="car3-transform">
+                <set>
+                    <translate>0 0 -350</translate>
+                </set>
+                <group name="car3" from="scenegraphs/car.xml"></group>
+            </transform>
+            <transform name="car4-transform">
+                <set>
+                    <translate>0 0 -490</translate>
+                </set>
+                <group name="car4" from="scenegraphs/car.xml"></group>
+            </transform>
+        </group>
+    </transform>
+</scene>
