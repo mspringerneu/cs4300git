@@ -21,7 +21,9 @@
                         </set>
                         <object instanceof="sphere">
                             <material>
-                                <color>1 0 1</color>
+                                <ambient>1 0 1</ambient>
+                                <diffuse>1 0 1</diffuse>
+                                <specular>1 0 1</specular>
                             </material>
                         </object>
                     </transform>
@@ -38,7 +40,9 @@
 						</set>
 						<object instanceof="box">
 							<material>
-								<color> 0 1 0 </color>
+								<ambient> 0 1 0 </ambient>
+                                <diffuse> 0 1 0 </diffuse>
+                                <specular> 0 1 0 </specular>
 							</material>
 						</object>
 					</transform>
@@ -53,7 +57,9 @@
 						</set>
 						<object instanceof="box">
 							<material>
-								<color> 1 0 0 </color>
+								<ambient> 1 0 0 </ambient>
+                                <diffuse> 1 0 0 </diffuse>
+                                <specular> 1 0 0 </specular>
 							</material>
 						</object>
 					</transform>

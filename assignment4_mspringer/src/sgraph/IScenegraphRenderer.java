@@ -69,12 +69,9 @@ public interface IScenegraphRenderer
      */
     void drawMesh(String name, util.Material material, String textureName, final Matrix4f transformation);
 
-    /**
-     * Add a new texture with the given name and the path to the actual image file
-     * Implementation of this function is dependent on the implementation of the renderer
-     * @param name
-     * @param path
-     */
-    void addTexture(String name, String path);
+    void getTexturePaths(Map<String, String> map);
+
+    util.TextureImage getTextureImage(String name);
+
     void dispose();
 }

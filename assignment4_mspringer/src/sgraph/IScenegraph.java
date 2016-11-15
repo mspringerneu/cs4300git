@@ -8,6 +8,7 @@ import util.ShaderProgram;
 
 import java.util.Map;
 import java.util.Stack;
+import java.util.List;
 
 /**
  * This interface captures all the operations that a scene graph should offer.
@@ -99,5 +100,10 @@ public interface IScenegraph<VertexType extends IVertexData>
      * @param path
      */
     void addTexture(String name, String path);
+
+    void giveTexturesMap();
+
+    List<util.Light> getLights(Matrix4f modelView);
+
     void dispose();
 }

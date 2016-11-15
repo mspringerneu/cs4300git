@@ -2,6 +2,8 @@ package sgraph;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import util.Light;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class TransformNode extends AbstractNode
      */
     protected Matrix4f transform,animation_transform;
 
+    protected List<util.Light> lights;
+
     /**
      * A reference to its only child
      */
@@ -33,6 +37,7 @@ public class TransformNode extends AbstractNode
         this.transform = new Matrix4f();
         animation_transform = new Matrix4f();
         child = null;
+        lights = new ArrayList<Light>();
     }
 
     /**
@@ -177,5 +182,35 @@ public class TransformNode extends AbstractNode
         {
             child.setScenegraph(graph);
         }
+    }
+
+    @Override
+    public void addLight(Light l) {
+        this.lights.add(l);
+    }
+
+    @Override
+    public List<util.Light> getLights(Matrix4f modelView) {
+        List<util.Light> lightList = new ArrayList<Light>(this.lights);
+        Matrix4f transformMatrix = new Matrix4f()
+                .mul(modelView)
+                .mul(this.transform);
+
+        for (int i = 0; i <lightList.size(); i++) {
+            Vector4f pos = lightList.get(i).getPosition();
+            Vector4f dir = lightList.get(i).getSpotDirection();
+            pos.mul(transformMatrix);
+            lightList.get(i).setPosition(pos);
+            if (dir != new Vector4f(0,0,0,0)) {
+                dir.mul(transformMatrix);
+                lightList.get(i).setSpotDirection(dir.x, dir.y, dir.z);
+            }
+        }
+
+        if (this.child != null) {
+            lightList.addAll(this.child.getLights(transformMatrix));
+        }
+
+        return lightList;
     }
 }

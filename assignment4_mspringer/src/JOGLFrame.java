@@ -72,6 +72,7 @@ public class JOGLFrame extends JFrame
                 catch (Exception e)
                 {
                     JOptionPane.showMessageDialog(JOGLFrame.this,e.getMessage(),"Error while loading",JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
                     System.exit(1);
                 }
             }

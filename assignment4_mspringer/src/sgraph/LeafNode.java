@@ -2,10 +2,13 @@ package sgraph;
 
 import com.jogamp.opengl.GL3;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import util.Light;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
+import java.util.List;
 
 /**
  * This node represents the leaf of a scene graph. It is the only type of node that has
@@ -26,10 +29,13 @@ public class LeafNode extends AbstractNode
 
     protected String textureName;
 
+    protected List<util.Light> lights;
+
     public LeafNode(String instanceOf,IScenegraph graph,String name)
     {
         super(graph,name);
         this.objInstanceName = instanceOf;
+        this.lights = new ArrayList<Light>();
     }
 
 
@@ -55,6 +61,7 @@ public class LeafNode extends AbstractNode
 
     @Override
     public void addLight(Light l) {
+        this.lights.add(l);
     }
 
     /*
@@ -91,6 +98,24 @@ public class LeafNode extends AbstractNode
         {
             context.drawMesh(objInstanceName,material,textureName,modelView.peek());
         }
+    }
+
+    @Override
+    public List<util.Light> getLights(Matrix4f modelView) {
+        List<util.Light> lightList = new ArrayList<Light>(this.lights);
+
+        for (int i = 0; i <lightList.size(); i++) {
+            Vector4f pos = lightList.get(i).getPosition();
+            Vector4f dir = lightList.get(i).getSpotDirection();
+            pos.mul(modelView);
+            lightList.get(i).setPosition(pos);
+            if (dir != new Vector4f(0,0,0,0)) {
+                dir.mul(modelView);
+                lightList.get(i).setSpotDirection(dir.x, dir.y, dir.z);
+            }
+        }
+
+        return lightList;
     }
 
 

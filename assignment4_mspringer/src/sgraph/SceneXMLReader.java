@@ -189,8 +189,11 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
                         stackNodes.push(node);
                         subgraph.put(stackNodes.peek().getName(), stackNodes.peek());
                     }
-                    stackNodes.push(node);
-                    subgraph.put(stackNodes.peek().getName(), stackNodes.peek());
+                    else {
+                        node.setTextureName("default");
+                        stackNodes.push(node);
+                        subgraph.put(stackNodes.peek().getName(), stackNodes.peek());
+                    }
                 }
             }
             break;
@@ -202,8 +205,10 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
                         name = attributes.getValue(i);
                     } else if (attributes.getQName(i).equals("path")) {
                         path = attributes.getValue(i);
-                        if (!path.endsWith(".obj"))
+                        if (!path.endsWith(".obj")) {
+                            path = path.split(".", 1)[0];
                             path = path + ".obj";
+                        }
                     }
                 }
                 if ((name.length() > 0) && (path.contains("models/"))) {
@@ -213,6 +218,7 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
                     scenegraph.addPolygonMesh(name, mesh);
                 }
             }
+            break;
             case "image": {
                 String name = "";
                 String path = "";
@@ -221,8 +227,10 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
                         name = attributes.getValue(i);
                     } else if (attributes.getQName(i).equals("path")) {
                         path = attributes.getValue(i);
-                        if (!path.endsWith(".png"))
+                        if (!path.endsWith(".png")) {
+                            path = path.split(".", 1)[0];
                             path = path + ".png";
+                        }
                     }
                 }
                 if ((name.length() > 0) && (path.contains("textures/"))) {
@@ -316,7 +324,6 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
                 else if (this.inMaterial) {
                     material.setSpecular(sc.nextFloat(), sc.nextFloat(), sc.nextFloat());
                 }
-                material.setSpecular(sc.nextFloat(), sc.nextFloat(), sc.nextFloat());
                 break;
             case "emissive":
                 sc = new Scanner(data);
@@ -350,7 +357,7 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
                 sc = new Scanner(data);
                 light.setSpotDirection(sc.nextFloat(), sc.nextFloat(), sc.nextFloat());
                 break;
-            case "spotCutoff":
+            case "spotAngle":
                 sc = new Scanner(data);
                 light.setSpotAngle(sc.nextFloat());
                 break;

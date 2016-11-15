@@ -3,13 +3,16 @@
     <instance name="box" path="models/box.obj" />
     <!-- cylinder dimensions: 2 2 2 // radius = 1, 2 in Y-->
     <instance name="cylinder" path="models/cylinder.obj" />
+    <image name="default" path="textures/white.png" />
         <transform name="slat-transform">
             <set>
                 <scale>70 5 20</scale>
             </set>
             <object instanceof="box">
                 <material>
-                    <color> 0 0 1 </color>
+                    <ambient> 0 0 1 </ambient>
+                    <diffuse> 0 0 1 </diffuse>
+                    <specular> 0 0 1 </specular>
                 </material>
             </object>
         </transform>

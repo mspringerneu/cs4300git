@@ -2,6 +2,7 @@ package sgraph;
 
 import org.joml.Matrix4f;
 import util.Light;
+import java.util.List;
 
 /**
  * This abstract class implements the {@link INode} interface. It provides default methods
@@ -141,8 +142,12 @@ public abstract class AbstractNode implements INode
      * Adds a new light to this node.
      * @param l
      */
+    @Override
     public void addLight(Light l) {
         throw new UnsupportedOperationException("Lights not supported yet!");
     }
+
+    @Override
+    public List<util.Light> getLights(Matrix4f modelView) {throw new UnsupportedOperationException("Lights not supported yet!");}
 
 }

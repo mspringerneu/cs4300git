@@ -1,11 +1,13 @@
 package sgraph;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import org.joml.Matrix4f;
 import util.IVertexData;
 import util.TextureImage;
+import com.jogamp.opengl.util.texture.Texture;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -31,9 +33,10 @@ public class GL3ScenegraphRenderer implements IScenegraphRenderer {
     protected Map<String,String> shaderVarsToVertexAttribs;
 
     /**
-     * A map to store all the textures
+     * A map to store all the texture names and paths
      */
-    private Map<String, TextureImage> textures;
+    private Map<String, String> texturePaths;
+
     /**
      * A table of renderers for individual meshes
      */
@@ -103,16 +106,22 @@ public class GL3ScenegraphRenderer implements IScenegraphRenderer {
     }
 
     @Override
-    public void addTexture(String name,String path)
-    {
+    public void getTexturePaths(Map<String, String> map) {
+        this.texturePaths = map;
+    }
+
+    @Override
+    public util.TextureImage getTextureImage(String name) {
+
         TextureImage image = null;
+        String path = texturePaths.get(name);
         String imageFormat = path.substring(path.indexOf('.')+1);
         try {
             image = new TextureImage(path,imageFormat,name);
         } catch (IOException e) {
             throw new IllegalArgumentException("Texture "+path+" cannot be read!");
         }
-        textures.put(name,image);
+        return image;
     }
 
     /**
@@ -149,23 +158,91 @@ public class GL3ScenegraphRenderer implements IScenegraphRenderer {
             GL3 gl = glContext.getGL().getGL3();
             //get the color
 
-            FloatBuffer fb = Buffers.newDirectFloatBuffer(4);
+            FloatBuffer fb16 = Buffers.newDirectFloatBuffer(16);
+            FloatBuffer fb4 = Buffers.newDirectFloatBuffer(4);
 
-            int loc = shaderLocations.getLocation("vColor");
-            //set the color for all vertices to be drawn for this object
-            if (loc<0)
-                throw new IllegalArgumentException("No shader variable for \" vColor \"");
+            //get material input variables that need to be given to the shader program
 
-            gl.glUniform3fv(loc,1,material.getAmbient().get(fb));
+            int materialAmbientLocation, materialDiffuseLocation, materialSpecularLocation, materialShininessLocation;
 
-            loc = shaderLocations.getLocation("modelview");
-            if (loc<0)
+            materialAmbientLocation = shaderLocations.getLocation("material.ambient");
+            if (materialAmbientLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" material.ambient \"");
+
+            gl.glUniform3fv(materialAmbientLocation,1,material.getAmbient().get(fb4));
+            materialDiffuseLocation = shaderLocations.getLocation("material.diffuse");
+
+            if (materialDiffuseLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" material.diffuse \"");
+
+            gl.glUniform3fv(materialDiffuseLocation,1,material.getDiffuse().get(fb4));
+
+            materialSpecularLocation = shaderLocations.getLocation("material.specular");
+            if (materialSpecularLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" material.specular \"");
+
+            gl.glUniform3fv(materialSpecularLocation,1,material.getSpecular().get(fb4));
+
+            materialShininessLocation = shaderLocations.getLocation("material.shininess");
+            if (materialShininessLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" material.shininess \"");
+            gl.glUniform1f(materialShininessLocation, material.getShininess());
+
+            //get texture input variables that need to be given to the shader program
+            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glActiveTexture(GL.GL_TEXTURE0);
+
+            util.TextureImage texImage = getTextureImage(textureName);
+            Texture tex = texImage.getTexture();
+            int textureLocation, texturematrixLocation;
+            Matrix4f textureTransform;
+
+            tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+            tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+            tex.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+            tex.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+
+            if (tex.getMustFlipVertically()) // for flipping the image vertically
+            {
+                textureTransform = new Matrix4f().translate(0, 1, 0).scale(1, -1, 1);
+            } else
+                textureTransform = new Matrix4f();
+
+            textureLocation = shaderLocations.getLocation("image");
+            if (textureLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" image \"");
+            gl.glUniform1i(textureLocation, 0);
+
+
+
+
+            int projectionLocation, modelviewLocation, normalmatrixLocation;
+            fb16 = Buffers.newDirectFloatBuffer(16);
+            transformation.get(fb16);
+
+            texturematrixLocation = shaderLocations.getLocation("texturematrix");
+            if (texturematrixLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" texturematrix \"");
+            gl.glUniformMatrix4fv(texturematrixLocation, 1, false, textureTransform.get(fb16));
+
+
+            projectionLocation = shaderLocations.getLocation("projection");
+            if (projectionLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" projection \"");
+            gl.glUniform3fv(materialSpecularLocation,1,material.getSpecular().get(fb4));
+
+            modelviewLocation = shaderLocations.getLocation("modelview");
+            if (modelviewLocation<0)
                 throw new IllegalArgumentException("No shader variable for \" modelview \"");
+            gl.glUniform3fv(materialSpecularLocation,1,material.getSpecular().get(fb4));
 
-            fb = Buffers.newDirectFloatBuffer(16);
-            transformation.get(fb);
-            gl.glUniformMatrix4fv(loc,1,false,transformation.get(fb));
+            normalmatrixLocation = shaderLocations.getLocation("normalmatrix");
+            if (normalmatrixLocation<0)
+                throw new IllegalArgumentException("No shader variable for \" normalmatrix \"");
+            gl.glUniform3fv(materialSpecularLocation,1,material.getSpecular().get(fb4));
 
+
+            tex.bind(gl);
             meshRenderers.get(name).draw(glContext);
         }
     }

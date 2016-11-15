@@ -32,7 +32,9 @@
             </set>
             <object instanceof="cylinder">
                 <material>
-                    <color> 0 1 1 </color>
+                    <ambient> 0 1 1 </ambient>
+                    <diffuse> 0 1 1 </diffuse>
+                    <specular> 0 1 1 </specular>
                 </material>
             </object>
         </transform>

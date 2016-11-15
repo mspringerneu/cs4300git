@@ -191,9 +191,19 @@ public class Scenegraph<VertexType extends IVertexData> implements IScenegraph<V
 
     @Override
     public void addTexture(String name, String path) {
+
         textures.put(name,path);
     }
 
+    @Override
+    public void giveTexturesMap() {
+        this.renderer.getTexturePaths(this.textures);
 
+    }
+
+    @Override
+    public List<util.Light> getLights(Matrix4f modelView) {
+        return root.getLights(modelView);
+    }
 
 }

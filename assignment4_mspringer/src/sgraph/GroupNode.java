@@ -2,6 +2,7 @@ package sgraph;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import util.Light;
 
 import java.util.ArrayList;
@@ -20,10 +21,13 @@ public class GroupNode extends AbstractNode
      */
     protected List<INode> children;
 
+    protected List<util.Light> lights;
+
     public GroupNode(IScenegraph graph,String name)
     {
         super(graph,name);
         children = new ArrayList<INode>();
+        lights = new ArrayList<Light>();
     }
 
     /**
@@ -131,5 +135,32 @@ public class GroupNode extends AbstractNode
     public List<INode> getChildren()
     {
         return children;
+    }
+
+    @Override
+    public void addLight(util.Light light) {
+        this.lights.add(light);
+    }
+
+    @Override
+    public List<util.Light> getLights(Matrix4f modelView) {
+        List<util.Light> lightList = new ArrayList<Light>(this.lights);
+
+        for (int i = 0; i <lightList.size(); i++) {
+            Vector4f pos = lightList.get(i).getPosition();
+            Vector4f dir = lightList.get(i).getSpotDirection();
+            pos.mul(modelView);
+            lightList.get(i).setPosition(pos);
+            if (dir != new Vector4f(0,0,0,0)) {
+                dir.mul(modelView);
+                lightList.get(i).setSpotDirection(dir.x, dir.y, dir.z);
+            }
+        }
+
+        for (int i = 0; i < this.children.size(); i++) {
+            lightList.addAll(this.children.get(i).getLights(modelView));
+        }
+
+        return lightList;
     }
 }
