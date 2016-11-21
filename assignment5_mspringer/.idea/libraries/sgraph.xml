@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sgraph">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/production/ScenegraphsLightsTextures/sgraph.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
