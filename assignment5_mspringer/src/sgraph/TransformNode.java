@@ -190,4 +190,10 @@ public class TransformNode extends AbstractNode {
     lights.addAll(super.getLightsInView(modelview));
     return lights;
   }
+
+    @Override
+    public List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms) {
+        List<HitRecord> hits = new ArrayList<HitRecord>();
+        return hits;
+    }
 }

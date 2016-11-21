@@ -9,6 +9,8 @@ import util.Light;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import HitRecord;
+import Ray3D;
 
 /**
  * This class represents a group node in the scenegraph. A group node is simply
@@ -146,4 +148,10 @@ public class GroupNode extends AbstractNode {
     lights.addAll(super.getLightsInView(modelview));
     return lights;
   }
+
+    @Override
+    public List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms) {
+        List<HitRecord> hits = new ArrayList<HitRecord>();
+        return hits;
+    }
 }

@@ -3,8 +3,12 @@ package sgraph;
 import com.jogamp.opengl.GL3;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import HitRecord;
+import Ray3D;
 
 /**
  * This node represents the leaf of a scene graph. It is the only type of node that has
@@ -88,5 +92,9 @@ public class LeafNode extends AbstractNode
         }
     }
 
-
+    @Override
+    public List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms) {
+        List<HitRecord> hits = new ArrayList<HitRecord>();
+        return hits;
+    }
 }

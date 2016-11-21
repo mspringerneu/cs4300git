@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Stack;
 
 import util.Light;
+import HitRecord;
+import Ray3D;
 
 /**
  * This abstract class implements the {@link sgraph.INode} interface. It
@@ -171,5 +173,10 @@ public abstract class AbstractNode implements INode {
     }
     return listLights;
   }
+
+    @Override
+    public List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms) throws IllegalArgumentException{
+        throw new UnsupportedOperationException("Raycasting not supported yet!");
+    }
 
 }

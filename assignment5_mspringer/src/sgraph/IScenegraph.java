@@ -8,6 +8,10 @@ import util.ShaderProgram;
 
 import java.util.Map;
 import java.util.Stack;
+import java.util.List;
+import HitRecord;
+import Ray3D;
+
 
 /**
  * This interface captures all the operations that a scene graph should offer.
@@ -85,13 +89,13 @@ public interface IScenegraph<VertexType extends IVertexData>
      */
     Map<String,util.PolygonMesh<VertexType>> getPolygonMeshes();
 
-
     /**
      * Get a mapping of all (name,INode) pairs for all nodes in this scene graph.
      * This function is useful in case all meshes of one scene graph have to be added to another
      * in an attempt to merge two scene graphs
      * @return
      */
+
     Map<String,INode> getNodes();
     /**
      * Add a new texture by this name
@@ -99,5 +103,14 @@ public interface IScenegraph<VertexType extends IVertexData>
      * @param path
      */
     void addTexture(String name,String path);
+
+    /**
+     * Takes a raytracer Ray3D and descends through the scenegraph, modifying the List<HitRecord> as it goes
+     * @param ray
+     * @param transforms
+     * @return
+     */
+    List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms);
+
     void dispose();
 }

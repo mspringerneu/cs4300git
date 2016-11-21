@@ -9,6 +9,8 @@ import util.Light;
 import util.PolygonMesh;
 
 import java.util.*;
+import HitRecord;
+import Ray3D;
 
 /**
  * A specific implementation of this scene graph. This implementation is still
@@ -144,4 +146,9 @@ public class Scenegraph<VertexType extends IVertexData> implements IScenegraph<V
   }
 
 
+  @Override
+    public List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms) {
+      List<HitRecord> hits = this.root.raycast(ray, transforms);
+      return hits;
+  }
 }

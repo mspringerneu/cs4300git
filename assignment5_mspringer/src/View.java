@@ -8,16 +8,17 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.List;
 
 
 /**
@@ -69,6 +70,49 @@ public class View {
     scenegraph.setRenderer(renderer);
     program.disable(gl);
   }
+
+    private void raytrace(int width, int height, Stack<Matrix4f> modelView) {
+        int i, j;
+
+        BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for (i = 0; i < width; i++) {
+            for (j = 0; j < height; j++) {
+                /*
+                 create ray in view coordinates
+                 start point: 0,0,0 always!
+                 going through near plane pixel (i,j)
+                 So 3D location of that pixel in view coordinates is
+                 x = i-width/2
+                 y = j-height/2
+                 z = -0.5*height/tan(0.5*FOVY)
+                */
+
+                //get color in (r,g,b)
+                int r, g, b;
+                if ((i + j) % 10 < 5)
+                    r = g = b = 0;
+                else
+                    r = g = b = 255;
+                output.setRGB(i, j, new Color(r, g, b).getRGB());
+            }
+        }
+
+        OutputStream outStream = null;
+
+        try {
+            outStream = new FileOutputStream("output/raytrace.png");
+        } catch (FileNotFoundException e) {
+            throw new IllegalArgumentException("Could not write raytraced image!");
+        }
+
+        try {
+            ImageIO.write(output, "png", outStream);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not write raytraced image!");
+        }
+    }
+
 
   public void init(GLAutoDrawable gla) throws Exception {
     GL3 gl = gla.getGL().getGL3();
