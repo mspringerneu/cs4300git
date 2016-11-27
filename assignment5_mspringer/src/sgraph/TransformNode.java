@@ -9,6 +9,8 @@ import util.Light;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import raytrace.HitRecord;
+import raytrace.Ray3D;
 
 /**
  * This node represents a transformation in the scene graph. It has only one
@@ -194,6 +196,12 @@ public class TransformNode extends AbstractNode {
     @Override
     public List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms) {
         List<HitRecord> hits = new ArrayList<HitRecord>();
+        transforms.push(new Matrix4f(transforms.peek()));
+        transforms.peek().mul(animation_transform)
+                .mul(transform);
+        if (child != null)
+            hits = child.raycast(ray, transforms);
+        transforms.pop();
         return hits;
     }
 }

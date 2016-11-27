@@ -8,8 +8,8 @@ import util.Light;
 
 import java.util.List;
 import java.util.Stack;
-import HitRecord;
-import Ray3D;
+import raytrace.HitRecord;
+import raytrace.Ray3D;
 
 /**
  * This interface represents all the operations offered by any type of node in
@@ -146,7 +146,7 @@ public interface INode {
   List<Light> getLightsInView(Stack<Matrix4f> modelview);
 
     /**
-     * Takes a raytracer Ray3D and descends through the scenegraph, modifying the List<HitRecord> as it goes
+     * Takes a raytracer raytrace.Ray3D and descends through the scenegraph, modifying the List<raytrace.HitRecord> as it goes
      * @param ray
      * @param transforms
      * @return

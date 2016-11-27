@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Stack;
 
 import util.Light;
-import HitRecord;
-import Ray3D;
+import raytrace.HitRecord;
+import raytrace.Ray3D;
 
 /**
  * This abstract class implements the {@link sgraph.INode} interface. It

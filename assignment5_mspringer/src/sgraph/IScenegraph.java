@@ -9,8 +9,8 @@ import util.ShaderProgram;
 import java.util.Map;
 import java.util.Stack;
 import java.util.List;
-import HitRecord;
-import Ray3D;
+import raytrace.HitRecord;
+import raytrace.Ray3D;
 
 
 /**
@@ -105,7 +105,7 @@ public interface IScenegraph<VertexType extends IVertexData>
     void addTexture(String name,String path);
 
     /**
-     * Takes a raytracer Ray3D and descends through the scenegraph, modifying the List<HitRecord> as it goes
+     * Takes a raytracer raytrace.Ray3D and descends through the scenegraph, modifying the List<raytrace.HitRecord> as it goes
      * @param ray
      * @param transforms
      * @return

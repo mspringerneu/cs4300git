@@ -9,8 +9,8 @@ import util.Light;
 import util.PolygonMesh;
 
 import java.util.*;
-import HitRecord;
-import Ray3D;
+import raytrace.HitRecord;
+import raytrace.Ray3D;
 
 /**
  * A specific implementation of this scene graph. This implementation is still
