@@ -18,6 +18,11 @@ public class Ray3D {
                 (float)(((-0.5f * height)/Math.tan(theta/2)) - start.z));
     }
 
+    public Ray3D(Vector3f start, Vector3f direction) {
+        this.start = start;
+        this.direction = direction;
+    }
+
     public Vector3f getStart() {
         return this.start;
     }

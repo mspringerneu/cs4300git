@@ -96,7 +96,19 @@ public class View {
                  z = -0.5*height/tan(0.5*FOVY)
                 */
 
+                if (hits.size() > 0) {
+                    float t = hits.get(0).getT();
+                    Vector3f intersect = new Vector3f(ray.getStart().add(ray.getDirection().mul(t)));
+                    float reflection = hits.get(0).getMaterial().getReflection();
+
+                    if (reflection > 0) {
+                        Ray3D reflectRay = new Ray3D(intersect, new Vector3f(ray.getDirection().reflect(hits.get(0).getNormal())));
+                    }
+                }
+
+
                 //get color in (r,g,b)
+
                 int r, g, b;
                 if (hits.size() > 0)
                     r = g = b = 255;
@@ -105,6 +117,52 @@ public class View {
                 output.setRGB(i, j, new Color(r, g, b).getRGB());
             }
         }
+
+        /*
+            REFLECTION
+
+            If object is reflective
+            I - incoming ray
+            P - Point of Intersection
+            N - Normal at P
+            R - Reflective Ray (reflection of I about N)
+            x -
+
+            Cp - Color at point P:
+                a - coefficient of absorption
+                r - coefficient of reflection
+                a + r = 1
+                Cp = a * Color from shading + r * Color from reflection
+         */
+
+        /*
+            REFRACTION
+
+            Snell's Law of Refraction:
+            C = speed of light
+            Refractive index Mu: Cvacuum / Cmaterial ( > 1)
+            I - Incoming ray
+            P - Point of intersection
+            N - Normal at P
+            T - Refracted ray
+            X - Ray perpendicular to N
+            ThetaI - Angle between I and N
+            ThetaT - angle between T and -N
+            MuI - Refractive Index of I
+            MuT - Refactive Index of T
+            sin(ThetaI)/sin(ThetaT) = MuT / MuI
+
+            T = sin(ThetaT) * X - cos(ThetaT) * N
+            X = I + cos(ThetaI) * N
+            X = I - (N dot I) * N / sin(ThetaI)
+            T = MuI/MuT(I - (N dot I) * N) - cos(ThetaT) * N
+
+            cos(ThetaI) = -(N dot I)
+            sin(ThetaI) = sqrt(1 - (N dot I)^2)
+            sin(ThetaT) = MuI/MuT * sqrt(1 - (N dot I)^2)
+            sin(ThetaT) = (MuI/MuT)^2 * (1 - (N dot I)^2)
+            cos(ThetaT) = sqrt(1 - (MuI/MuT)^2 * (1 - (N dot I)^2)
+         */
 
         OutputStream outStream = null;
 

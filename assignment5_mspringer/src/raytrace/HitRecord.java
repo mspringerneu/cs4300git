@@ -23,6 +23,14 @@ public class HitRecord {
         return this.t;
     }
 
+    public Vector3f getNormal() {
+        return this.normal;
+    }
+
+    public util.Material getMaterial() {
+        return this.material;
+    }
+
     /*Comparator for sorting a list of HitRecords by t*/
     public static Comparator<HitRecord> HitRecordTimeComparator = new Comparator<HitRecord>() {
 
