@@ -138,7 +138,7 @@ public class View {
                 if (i % 10 == 0 && j % 10 == 0) {
                     // System.out.println("Color at Point (" + i + "," + j + ") is: " + color.toString());
                 }
-                output.setRGB(i, j, color.getRGB());
+                output.setRGB(width - i - 1, height - j - 1, color.getRGB());
             }
         }
 
@@ -310,7 +310,7 @@ public class View {
             modelViews.pop();
         }
 
-        modelView = new Matrix4f().lookAt(new Vector3f(0, 0, 2.0f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+        modelView = new Matrix4f().lookAt(new Vector3f(70, 100, -80f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
         modelViews.push(new Matrix4f().mul(modelView));
 
         if (raytrace) {

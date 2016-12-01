@@ -151,4 +151,9 @@ public class Scenegraph<VertexType extends IVertexData> implements IScenegraph<V
       List<HitRecord> hits = this.root.raycast(ray, transforms);
       return hits;
   }
+
+  @Override
+  public List<Light> getLights() {
+      List<Light> lights = new ArrayList<Light>();
+  }
 }

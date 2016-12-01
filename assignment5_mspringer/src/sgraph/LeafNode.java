@@ -204,7 +204,7 @@ public class LeafNode extends AbstractNode
                 Vector4f normalIn = getBoxNormal(intersectIn);
                 Vector4f normalOut = getBoxNormal(intersectOut);
                 Material mat = this.getMaterial();
-                hit = new HitRecord(tEnter, tExit, intersectIn, intersectOut, normalIn, normalOut, mat);
+                hit = new HitRecord(tEnter, tExit, intersectIn, intersectOut, normalIn, normalOut, mat, new Matrix4f(transforms.peek()));
                 hits.add(hit);
             }
         }
@@ -279,6 +279,8 @@ public class LeafNode extends AbstractNode
         Ray3D transformRay = new Ray3D(ray);
         Matrix4f transform = new Matrix4f(transforms.peek());
         transformRay.viewToWorld(transform);
+        Vector4f start = transformRay.getStart();
+        Vector4f direction = transformRay.getDirection();
         HitRecord hit;
         float maxT = (float)Double.POSITIVE_INFINITY;
         float minT = (float)Double.NEGATIVE_INFINITY;
@@ -390,9 +392,15 @@ public class LeafNode extends AbstractNode
                     A = 0 : cannot happen without other mistakes in code
                     B^2 - 4AC < 0 : means the ray does not hit the sphere
                  */
+
+        float a = 1;
+        float b = 2 * (start.dot(direction));
+        float c = (float)(Math.pow(start.x, 2) + Math.pow(start.y, 2) + Math.pow(start.z, 2) - 1);
+        /*
         float a = transformRay.getDirection().lengthSquared();
         float b = 2 * (transformRay.getStart().dot(transformRay.getDirection()));
         float c = transformRay.getStart().lengthSquared() - 1;
+        */
 
         List<Float> t = quadratic(a,b,c);
         if (t.size() == 2) {
@@ -400,9 +408,9 @@ public class LeafNode extends AbstractNode
                 float tEnter = t.get(0);
                 float tExit = t.get(1);
                 if (tEnter > 0) {
-                    Vector4f intersectIn = new Vector4f(transformRay.getStart().add(transformRay.getDirection().mul(tEnter)));
-                    Vector4f intersectOut = new Vector4f(transformRay.getStart().add(transformRay.getDirection().mul(tExit)));
-                    hit = new HitRecord(tEnter, tExit, intersectIn, intersectOut, intersectIn, intersectOut, this.getMaterial());
+                    Vector4f intersectIn = new Vector4f(start.add(direction.mul(tEnter)));
+                    Vector4f intersectOut = new Vector4f(start.add(direction.mul(tExit)));
+                    hit = new HitRecord(tEnter, tExit, intersectIn, intersectOut, intersectIn, intersectOut, this.getMaterial(), new Matrix4f(transforms.peek()));
                     hits.add(hit);
                 }
             }
@@ -411,7 +419,7 @@ public class LeafNode extends AbstractNode
             float tEnter = t.get(0);
             if (tEnter > 0) {
                 Vector4f intersectIn = new Vector4f(transformRay.getStart().add(transformRay.getDirection().mul(tEnter)));
-                hit = new HitRecord(tEnter, tEnter, intersectIn, intersectIn, intersectIn, intersectIn, this.getMaterial());
+                hit = new HitRecord(tEnter, tEnter, intersectIn, intersectIn, intersectIn, intersectIn, this.getMaterial(), new Matrix4f(transforms.peek()));
                 hits.add(hit);
             }
         }

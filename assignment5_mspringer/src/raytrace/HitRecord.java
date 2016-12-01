@@ -1,5 +1,6 @@
 package raytrace;
 
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -16,8 +17,9 @@ public class HitRecord {
     private Vector4f intersectionOut;
     private Vector4f normalOut;
     private util.Material material;
+    private Matrix4f transform;
 
-    public HitRecord(float tEnter, float tExit, Vector4f intersectionIn, Vector4f intersectionOut, Vector4f normalIn, Vector4f normalOut, util.Material material) {
+    public HitRecord(float tEnter, float tExit, Vector4f intersectionIn, Vector4f intersectionOut, Vector4f normalIn, Vector4f normalOut, util.Material material, Matrix4f transform) {
         this.tEnter = tEnter;
         this.tExit = tExit;
         this.intersectionIn = intersectionIn;
@@ -25,6 +27,7 @@ public class HitRecord {
         this.normalIn = normalIn;
         this.normalOut = normalOut;
         this.material = material;
+        this.transform = transform;
     }
 
     public float getTEnter() {
@@ -34,16 +37,19 @@ public class HitRecord {
     public float getTExit() { return this.tExit; }
 
     public Vector4f getIntersectionIn() {
-        return this.intersectionIn;
+        return new Vector4f(this.intersectionIn);
     }
     public Vector4f getIntersectionOut() {
-        return this.intersectionOut;
+        return new Vector4f(this.intersectionOut);
     }
     public Vector4f getNormalIn() {
-        return this.normalIn;
+        return new Vector4f(this.normalIn);
     }
     public Vector4f getNormalOut() {
-        return this.normalOut;
+        return new Vector4f(this.normalOut);
+    }
+    public Matrix4f getTransform() {
+        return new Matrix4f(this.transform);
     }
 
     public util.Material getMaterial() {

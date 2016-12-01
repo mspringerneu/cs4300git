@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import org.joml.Matrix4f;
 import util.IVertexData;
+import util.Light;
 import util.ShaderProgram;
 
 import java.util.Map;
@@ -111,6 +112,8 @@ public interface IScenegraph<VertexType extends IVertexData>
      * @return
      */
     List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms);
+
+    List<Light> getLights();
 
     void dispose();
 }
