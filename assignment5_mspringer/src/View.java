@@ -126,7 +126,7 @@ public class View {
                 //get color in (r,g,b)
 
                 int r, g, b;
-                Vector4f outColor = new Vector4f(0,0,0,0);
+                Vector4f outColor = new Vector4f(1,1,1,0);
                 if (hits.size() > 0) {
                     Material mat = hits.get(0).getMaterial();
                     outColor = mat.getAmbient();
@@ -308,7 +308,7 @@ public class View {
             modelViews.pop();
         }
 
-        modelView = new Matrix4f().lookAt(new Vector3f(0, 0, -15f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+        modelView = new Matrix4f().lookAt(new Vector3f(0, 0, 15.0f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
         modelViews.push(new Matrix4f().mul(modelView));
 
         if (raytrace) {
