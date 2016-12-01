@@ -58,7 +58,7 @@ public class JOGLFrame extends JFrame
                     view.init(canvas);
                     InputStream in = getClass().getClassLoader()
                             .getResourceAsStream
-                                    ("scenegraphs/scene" +
+                                    ("scenegraphs/box" +
                                     ".xml");
                     view.initScenegraph(canvas,in);
                     textRenderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 18),true,false);
@@ -79,12 +79,14 @@ public class JOGLFrame extends JFrame
             @Override
             public void display(GLAutoDrawable glAutoDrawable) { //called every time this window must be redrawn
                 view.draw(canvas);
+                /*
                 textRenderer.beginRendering(canvas.getWidth(), canvas.getHeight());
                 // optionally set the color
                 textRenderer.setColor(1.0f, 1.0f, 0.0f, 1.0f);
                 String text = "Frame rate: " + canvas.getAnimator().getLastFPS();
                 textRenderer.draw(text, 10, canvas.getHeight()-50);
                 textRenderer.endRendering();
+                */
             }
 
             @Override

@@ -2,6 +2,7 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.GLBuffers;
 
+import com.jogamp.opengl.util.texture.Texture;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -21,6 +22,8 @@ import java.util.Stack;
 import java.util.List;
 import raytrace.Ray3D;
 import raytrace.HitRecord;
+import util.Material;
+import util.ObjectInstance;
 
 
 /**
@@ -32,8 +35,8 @@ import raytrace.HitRecord;
  */
 public class View {
     private int WINDOW_WIDTH, WINDOW_HEIGHT;
-    private Stack<Matrix4f> modelView;
-    private Matrix4f projection, trackballTransform;
+    private Stack<Matrix4f> modelViews;
+    private Matrix4f projection, trackballTransform, modelView;
     private float trackballRadius;
     private Vector2f mousePos;
 
@@ -44,10 +47,17 @@ public class View {
     private sgraph.IScenegraph<VertexAttrib> scenegraph;
     private float fieldOfView = 120.0f;
 
+    private List<ObjectInstance> meshObjects;
+    private List<util.TextureImage> textures;
+    private List<util.Material> materials;
+    private List<Matrix4f> transforms;
+    private List<util.Light> lights;
+    private boolean raytrace;
+
 
     public View() {
         projection = new Matrix4f();
-        modelView = new Stack<Matrix4f>();
+        modelViews = new Stack<Matrix4f>();
         trackballRadius = 300;
         trackballTransform = new Matrix4f();
         scenegraph = null;
@@ -79,12 +89,16 @@ public class View {
 
         BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        Vector3f start = new Vector3f(0,0,0);
+        Vector4f start = new Vector4f(0,0,0,1);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
 
-                Ray3D ray = new Ray3D(start, i, j, width, height, fieldOfView);
+                Ray3D ray = new Ray3D(start, i, j, width, height, (float)Math.toRadians(fieldOfView));
+
+                float Dx = (i - (width/2)) - start.x;
+                float Dy = (j - (height/2)) - start.y;
+
                 List<HitRecord> hits = scenegraph.raycast(ray, modelView);
                 /*
                  create ray in view coordinates
@@ -96,8 +110,9 @@ public class View {
                  z = -0.5*height/tan(0.5*FOVY)
                 */
 
+                /*
                 if (hits.size() > 0) {
-                    float t = hits.get(0).getT();
+                    float t = hits.get(0).getTEnter();
                     Vector3f intersect = new Vector3f(ray.getStart().add(ray.getDirection().mul(t)));
                     float reflection = hits.get(0).getMaterial().getReflection();
 
@@ -105,18 +120,27 @@ public class View {
                         Ray3D reflectRay = new Ray3D(intersect, new Vector3f(ray.getDirection().reflect(hits.get(0).getNormal())));
                     }
                 }
+                */
 
 
                 //get color in (r,g,b)
 
                 int r, g, b;
-                if (hits.size() > 0)
-                    r = g = b = 255;
-                else
-                    r = g = b = 0;
-                output.setRGB(i, j, new Color(r, g, b).getRGB());
+                Vector4f outColor = new Vector4f(0,0,0,0);
+                if (hits.size() > 0) {
+                    Material mat = hits.get(0).getMaterial();
+                    outColor = mat.getAmbient();
+                    System.out.println("Hit at Point (" + i + "," + j + ")!");
+                }
+                Color color = new Color(outColor.x, outColor.y, outColor.z);
+                if (i % 10 == 0 && j % 10 == 0) {
+                    // System.out.println("Color at Point (" + i + "," + j + ") is: " + color.toString());
+                }
+                output.setRGB(i, j, color.getRGB());
             }
         }
+
+        System.out.println("Finished rayTracing!");
 
         /*
             REFLECTION
@@ -194,54 +218,175 @@ public class View {
 
         //get input variables that need to be given to the shader program
         projectionLocation = shaderLocations.getLocation("projection");
+
+        raytrace = true;
     }
+
+    /*
+    private void initObjects(GL3 gl) throws FileNotFoundException, IOException {
+
+        util.PolygonMesh<?> tmesh;
+
+        InputStream in;
+
+        in = getClass().getClassLoader().getResourceAsStream("models/box.obj");
+
+        tmesh = util.ObjImporter.importFile(new VertexAttribProducer(),
+                in, true);
+
+        util.ObjectInstance obj;
+
+        Map<String, String> shaderToVertexAttribute = new HashMap<String, String>();
+
+        shaderToVertexAttribute.put("vPosition", "position");
+        shaderToVertexAttribute.put("vNormal", "normal");
+        shaderToVertexAttribute.put("vTexCoord", "texcoord");
+
+
+        obj = new util.ObjectInstance(
+                gl,
+                program,
+                shaderLocations,
+                shaderToVertexAttribute,
+                tmesh, new String(""));
+        meshObjects.add(obj);
+        util.Material mat;
+
+        mat = new util.Material();
+
+        mat.setAmbient(0.5f, 0.5f, 0.5f);
+        mat.setDiffuse(0.6f, 0.6f, 0.6f);
+        mat.setSpecular(0.6f, 0.6f, 0.6f);
+        mat.setShininess(100);
+        materials.add(mat);
+
+        Matrix4f t;
+
+        t = new Matrix4f();
+        transforms.add(t);
+
+        // textures
+
+        util.TextureImage textureImage;
+
+        textureImage = new util.TextureImage("textures/die.png",
+                "png",
+                "white");
+
+        Texture tex = textureImage.getTexture();
+
+
+        tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+        tex.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        tex.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+        tex.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+
+        textures.add(textureImage);
+    }
+
+    private void initLights() {
+        util.Light l = new util.Light();
+        l.setAmbient(0.5f, 0.5f, 0.5f);
+        l.setDiffuse(0.5f, 0.5f, 0.5f);
+        l.setSpecular(0.5f, 0.5f, 0.5f);
+        l.setPosition(-100, 100, 100);
+        lights.add(l);
+
+        l = new util.Light();
+        l.setAmbient(0.5f, 0.5f, 0.5f);
+        l.setDiffuse(0.5f, 0.5f, 0.5f);
+        l.setSpecular(0.5f, 0.5f, 0.5f);
+        l.setPosition(100, 100, 100);
+        lights.add(l);
+
+    }
+    */
 
 
     public void draw(GLAutoDrawable gla) {
+        while (!modelViews.empty()) {
+            modelViews.pop();
+        }
+
+        modelView = new Matrix4f().lookAt(new Vector3f(0, 0, -15f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+        modelViews.push(new Matrix4f().mul(modelView));
+
+        if (raytrace) {
+            raytrace(WINDOW_WIDTH, WINDOW_HEIGHT, modelViews);
+            raytrace = false;
+        } else {
+            scenegraph.draw(modelViews);
+        }
+    }
+
+    public void drawOpenGL(GLAutoDrawable gla) {
         GL3 gl = gla.getGL().getGL3();
+        FloatBuffer fb16 = Buffers.newDirectFloatBuffer(16);
+        FloatBuffer fb4 = Buffers.newDirectFloatBuffer(4);
+
 
         gl.glClearColor(0, 0, 0, 1);
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT);
-        gl.glEnable(gl.GL_DEPTH_TEST);
-
+        gl.glEnable(GL.GL_DEPTH_TEST);
 
         program.enable(gl);
+        for (int i = 0; i < lights.size(); i++) {
 
-        while (!modelView.empty())
-            modelView.pop();
+            Vector4f pos = lights.get(i).getPosition();
+            Matrix4f lightTransformation;
 
-        /*
-         *In order to change the shape of this triangle, we can either move the vertex positions above, or "transform" them
-         * We use a modelview matrix to store the transformations to be applied to our triangle.
-         * Right now this matrix is identity, which means "no transformations"
-         */
-        modelView.push(new Matrix4f());
-        modelView.peek().lookAt(new Vector3f(70, 100, -80), new Vector3f(0, 0,
-                        0),
-                new Vector3f(0, 1, 0))
-                .mul(trackballTransform);
+            lightTransformation = new Matrix4f(modelView);
+            pos = lightTransformation.transform(pos);
+            String varName = "light[" + i + "].position";
 
+            gl.glUniform4fv(shaderLocations.getLocation(varName), 1, pos.get
+                    (fb4));
+        }
 
     /*
      *Supply the shader with all the matrices it expects.
     */
-        FloatBuffer fb = Buffers.newDirectFloatBuffer(16);
-        gl.glUniformMatrix4fv(projectionLocation, 1, false, projection.get(fb));
+        gl.glUniformMatrix4fv(
+                shaderLocations.getLocation("projection"),
+                1,
+                false, projection.get(fb16));
 
-        //a uniform texture matrix for everybody
-        gl.glUniformMatrix4fv(shaderLocations.getLocation("texturematrix"),
-                1,false,new Matrix4f().identity().get(fb));
 
-        scenegraph.draw(modelView);
-    /*
-     *OpenGL batch-processes all its OpenGL commands.
-          *  *The next command asks OpenGL to "empty" its batch of issued commands, i.e. draw
-     *
-     *This a non-blocking function. That is, it will signal OpenGL to draw, but won't wait for it to
-     *finish drawing.
-     *
-     *If you would like OpenGL to start drawing and wait until it is done, call glFinish() instead.
-     */
+        //all the light properties, except positions
+        gl.glUniform1i(shaderLocations.getLocation("numLights"),
+                lights.size());
+        for (int i = 0; i < lights.size(); i++) {
+            String name = "light[" + i + "].";
+            gl.glUniform3fv(shaderLocations.getLocation(name + "ambient"),
+                    1, lights.get(i).getAmbient().get(fb4));
+            gl.glUniform3fv(shaderLocations.getLocation(name + "diffuse"),
+                    1, lights.get(i).getDiffuse().get(fb4));
+            gl.glUniform3fv(shaderLocations.getLocation(name + "specular"),
+                    1, lights.get(i).getSpecular().get(fb4));
+        }
+
+        gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+
+
+        gl.glUniform1i(shaderLocations.getLocation("image"), 0);
+
+
+        for (int i = 0; i < meshObjects.size(); i++) {
+            Matrix4f transformation = new Matrix4f().mul(modelView).mul(trackballTransform).mul(transforms.get(i));
+            Matrix4f normalmatrix = new Matrix4f(transformation);
+            normalmatrix = normalmatrix.invert().transpose();
+            gl.glUniformMatrix4fv(shaderLocations.getLocation("modelview"), 1, false, transformation.get(fb16));
+            gl.glUniformMatrix4fv(shaderLocations.getLocation("normalmatrix"), 1, false, normalmatrix.get(fb16));
+
+            gl.glUniform3fv(shaderLocations.getLocation("material.ambient"), 1, materials.get(i).getAmbient().get(fb4));
+            gl.glUniform3fv(shaderLocations.getLocation("material.diffuse"), 1, materials.get(i).getDiffuse().get(fb4));
+            gl.glUniform3fv(shaderLocations.getLocation("material.specular"), 1, materials.get(i).getSpecular().get(fb4));
+            gl.glUniform1f(shaderLocations.getLocation("material.shininess"), materials.get(i).getShininess());
+
+            textures.get(i).getTexture().bind(gl);
+            meshObjects.get(i).draw(gla);
+        }
         gl.glFlush();
 
         program.disable(gl);

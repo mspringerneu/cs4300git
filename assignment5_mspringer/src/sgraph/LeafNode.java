@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 import raytrace.HitRecord;
 import raytrace.Ray3D;
+import util.Material;
 
 /**
  * This node represents the leaf of a scene graph. It is the only type of node that has
@@ -120,7 +121,11 @@ public class LeafNode extends AbstractNode
 
     private List<HitRecord> BoxRaycast(Ray3D ray, Stack<Matrix4f> transforms) {
         List<HitRecord> hits = new ArrayList<HitRecord>();
-        float maxT = 10000;
+        Ray3D transformRay = new Ray3D(ray);
+        transformRay.mul(transforms.peek());
+        HitRecord hit;
+        float maxT = (float)Double.POSITIVE_INFINITY;
+        float minT = (float)Double.NEGATIVE_INFINITY;
                 /*
                     Ray(start S, vector V)
                     create ray in view coordinates
@@ -170,34 +175,44 @@ public class LeafNode extends AbstractNode
                     tmin = max(tminx, tminy, tminz)
                     tmax = min(tmaxx, tmaxy, tmaxz)
                  */
-        float tx1 = (-0.5f - ray.getStart().x) / ray.getDirection().x;
-        float tx2 = (-0.5f - ray.getStart().x) / ray.getDirection().x;
+        float tx1 = (-0.5f - transformRay.getStart().x) / transformRay.getDirection().x;
+        float tx2 = (0.5f - transformRay.getStart().x) / transformRay.getDirection().x;
         float tminx = Math.min(tx1, tx2);
         float tmaxx = Math.max(tx1, tx2);
-        float ty1 = (-0.5f - ray.getStart().y) / ray.getDirection().y;
-        float ty2 = (-0.5f - ray.getStart().y) / ray.getDirection().y;
+        float ty1 = (-0.5f - transformRay.getStart().y) / transformRay.getDirection().y;
+        float ty2 = (0.5f - transformRay.getStart().y) / transformRay.getDirection().y;
         float tminy = Math.min(ty1, ty2);
         float tmaxy = Math.max(ty1, ty2);
-        float tz1 = (-0.5f - ray.getStart().z) / ray.getDirection().z;
-        float tz2 = (-0.5f - ray.getStart().z) / ray.getDirection().z;
+        float tz1 = (-0.5f - transformRay.getStart().z) / transformRay.getDirection().z;
+        float tz2 = (0.5f - transformRay.getStart().z) / transformRay.getDirection().z;
         float tminz = Math.min(tz1, tz2);
         float tmaxz = Math.max(tz1, tz2);
-        float tmin = Math.max(tminx, Math.max(tminy, Math.max(tminz, -maxT)));
+        float tmin = Math.max(tminx, Math.max(tminy, Math.max(tminz, minT)));
         float tmax = Math.min(tmaxx, Math.min(tmaxy, Math.min(tmaxz, maxT)));
-        float t;
+        float tEnter;
+        float tExit;
 
         if (tmin != maxT && tmin > 0) {
-            t = tmin;
+            tEnter = tmin;
+            if (tmax != maxT) {
+                tExit = tmax;
+                Vector4f intersectIn  = transformRay.getStart().add(transformRay.getDirection().mul(tmin));
+                Vector4f intersectOut  = transformRay.getStart().add(transformRay.getDirection().mul(tmax));
+                Vector4f normalIn = getBoxNormal(intersectIn);
+                Vector4f normalOut = getBoxNormal(intersectOut);
+                Material mat = this.getMaterial();
+                hit = new HitRecord(tEnter, tExit, intersectIn, intersectOut, normalIn, normalOut, mat);
+                hits.add(hit);
+            }
         }
         else {
-            t = tmax;
+            tEnter = tmax;
         }
 
                 /*
                     Need Point of Intersection P, Vector N (normal at P), and List<Light> L, all in view coordinate system
                     To get N, apply the inverse transpose of M on N in object coordinate system
                  */
-        Vector3f p = ray.getStart().add(ray.getDirection().mul(t));
 
                 /*
                     Equation of sphere with center C (Cx,Cy,Cz) and radius r: (X-Cx)^2 + (Y-Cy)^2 + (Z-Cz)^2 = r^2
@@ -339,7 +354,7 @@ public class LeafNode extends AbstractNode
                     Need Point of Intersection P, Vector N (normal at P), and List<Light> L, all in view coordinate system
                     To get N, apply the inverse transpose of M on N in object coordinate system
                  */
-        Vector3f p = ray.getStart().add(ray.getDirection().mul(t));
+        // Vector3f p = ray.getStart().add(ray.getDirection().mul(transforms.peek().invert()));
 
                 /*
                     Equation of sphere with center C (Cx,Cy,Cz) and radius r: (X-Cx)^2 + (Y-Cy)^2 + (Z-Cz)^2 = r^2
@@ -395,5 +410,29 @@ public class LeafNode extends AbstractNode
                         Cast a Ray from P to i.position
                  */
         return hits;
+    }
+
+    public Vector4f getBoxNormal(Vector4f intersect) {
+        float normalx, normaly, normalz;
+        if (intersect.x == -0.5f || intersect.x == 0.5f) {
+            normalx = intersect.x;
+        }
+        else {
+            normalx = 0;
+        }
+        if (intersect.y == -0.5f || intersect.y == 0.5f) {
+            normaly = intersect.y;
+        }
+        else {
+            normaly = 0;
+        }
+        if (intersect.z == -0.5f || intersect.z == 0.5f) {
+            normalz = intersect.z;
+        }
+        else {
+            normalz = 0;
+        }
+
+        return new Vector4f(normalx, normaly, normalz, 0).normalize();
     }
 }

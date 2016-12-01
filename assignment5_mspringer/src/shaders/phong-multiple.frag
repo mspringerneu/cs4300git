@@ -1,4 +1,4 @@
-#version 140 core
+#version 400 core
 
 struct MaterialProperties
 {
