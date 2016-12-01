@@ -91,9 +91,11 @@ public class View {
 
         Vector4f start = new Vector4f(0,0,0,1);
 
+
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
 
+                //Ray3D ray = new Ray3D(start, width/2, height/2, width, height, (float)Math.toRadians(fieldOfView));
                 Ray3D ray = new Ray3D(start, i, j, width, height, (float)Math.toRadians(fieldOfView));
 
                 float Dx = (i - (width/2)) - start.x;
@@ -308,7 +310,7 @@ public class View {
             modelViews.pop();
         }
 
-        modelView = new Matrix4f().lookAt(new Vector3f(0, 0, 15.0f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+        modelView = new Matrix4f().lookAt(new Vector3f(0, 0, 2.0f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
         modelViews.push(new Matrix4f().mul(modelView));
 
         if (raytrace) {

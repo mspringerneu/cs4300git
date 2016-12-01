@@ -122,7 +122,8 @@ public class LeafNode extends AbstractNode
     private List<HitRecord> BoxRaycast(Ray3D ray, Stack<Matrix4f> transforms) {
         List<HitRecord> hits = new ArrayList<HitRecord>();
         Ray3D transformRay = new Ray3D(ray);
-        transformRay.mul(transforms.peek());
+        Matrix4f transform = new Matrix4f(transforms.peek());
+        transformRay.viewToWorld(transform);
         HitRecord hit;
         float maxT = (float)Double.POSITIVE_INFINITY;
         float minT = (float)Double.NEGATIVE_INFINITY;
@@ -150,6 +151,8 @@ public class LeafNode extends AbstractNode
                     t = -(aSx + bSy + cSz + d) / (aVx + bVy + cVz)
 
                     If ray || to plane P, divide by zero error
+
+                    Need t such that S + tV
                  */
                 /*
                     For box centered at 0 with dimensions (1,1,1)
@@ -192,7 +195,7 @@ public class LeafNode extends AbstractNode
         float tEnter;
         float tExit;
 
-        if (tmin != maxT && tmin > 0) {
+        if (tmin != maxT && tmin > 0 && tmin <= tmax) {
             tEnter = tmin;
             if (tmax != maxT) {
                 tExit = tmax;
@@ -273,7 +276,12 @@ public class LeafNode extends AbstractNode
 
     private List<HitRecord> SphereRaycast(Ray3D ray, Stack<Matrix4f> transforms) {
         List<HitRecord> hits = new ArrayList<HitRecord>();
-        float t = 0;
+        Ray3D transformRay = new Ray3D(ray);
+        Matrix4f transform = new Matrix4f(transforms.peek());
+        transformRay.viewToWorld(transform);
+        HitRecord hit;
+        float maxT = (float)Double.POSITIVE_INFINITY;
+        float minT = (float)Double.NEGATIVE_INFINITY;
                 /*
                     Ray(start S, vector V)
                     create ray in view coordinates
@@ -382,7 +390,31 @@ public class LeafNode extends AbstractNode
                     A = 0 : cannot happen without other mistakes in code
                     B^2 - 4AC < 0 : means the ray does not hit the sphere
                  */
+        float a = transformRay.getDirection().lengthSquared();
+        float b = 2 * (transformRay.getStart().dot(transformRay.getDirection()));
+        float c = transformRay.getStart().lengthSquared() - 1;
 
+        List<Float> t = quadratic(a,b,c);
+        if (t.size() == 2) {
+            if (t.get(0) != (float)Double.POSITIVE_INFINITY) {
+                float tEnter = t.get(0);
+                float tExit = t.get(1);
+                if (tEnter > 0) {
+                    Vector4f intersectIn = new Vector4f(transformRay.getStart().add(transformRay.getDirection().mul(tEnter)));
+                    Vector4f intersectOut = new Vector4f(transformRay.getStart().add(transformRay.getDirection().mul(tExit)));
+                    hit = new HitRecord(tEnter, tExit, intersectIn, intersectOut, intersectIn, intersectOut, this.getMaterial());
+                    hits.add(hit);
+                }
+            }
+        }
+        else if (t.size() == 1) {
+            float tEnter = t.get(0);
+            if (tEnter > 0) {
+                Vector4f intersectIn = new Vector4f(transformRay.getStart().add(transformRay.getDirection().mul(tEnter)));
+                hit = new HitRecord(tEnter, tEnter, intersectIn, intersectIn, intersectIn, intersectIn, this.getMaterial());
+                hits.add(hit);
+            }
+        }
                 /*
                     Textures
                     -PI/2 <= phi <= PI/2
@@ -434,5 +466,33 @@ public class LeafNode extends AbstractNode
         }
 
         return new Vector4f(normalx, normaly, normalz, 0).normalize();
+    }
+
+    public List<Float> quadratic(float a, float b, float c) {
+        List<Float> t = new ArrayList<Float>();
+        float t1,t2;
+        float numerator = (float)(Math.pow(b,2) - (4 * a * c));
+        if (numerator < 0) {
+            t1 = (float)Double.POSITIVE_INFINITY;
+            t2 = (float)Double.POSITIVE_INFINITY;
+            t.add(t1);
+            t.add(t2);
+        }
+        else {
+            t1 = (float)(-b + Math.sqrt(numerator)) / (2 * a);
+            t2 = (float)(-b - Math.sqrt(numerator)) / (2 * a);
+            if (t1 > t2) {
+                t.add(t2);
+                t.add(t1);
+            }
+            else if (t1 < t2) {
+                t.add(t1);
+                t.add(t2);
+            }
+            else {
+                t.add(t1);
+            }
+        }
+        return t;
     }
 }

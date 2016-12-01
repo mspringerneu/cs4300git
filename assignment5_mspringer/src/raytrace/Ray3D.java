@@ -12,33 +12,39 @@ public class Ray3D {
     private Vector4f direction;
 
     public Ray3D(Vector4f start, int i, int j, int width, int height, float theta) {
-        this.start = start;
+        this.start = new Vector4f(start.x, start.y, start.z, 1);
         this.direction = new Vector4f(
-                (i-(width/2)),
-                (j-(height/2)),
-                (float)((-0.5f * height)/Math.tan(theta/2)), 0).normalize();
+                (i-(width/2)) - start.x,
+                (j-(height/2)) - start.y,
+                (float)((-0.5f * height)/Math.tan(theta/2f)) - start.z, 0);
+        this.direction.normalize();
     }
 
     public Ray3D(Vector4f start, Vector4f direction) {
-        this.start = start;
-        this.direction = direction;
+        this.start = new Vector4f(start);
+        this.direction = new Vector4f(direction);
+        this.direction.normalize();
     }
 
     public Ray3D(Ray3D ray) {
-        this.start = ray.getStart();
-        this.direction = ray.getDirection();
+        this.start = new Vector4f(ray.getStart());
+        this.direction = new Vector4f(ray.getDirection());
+        this.direction.normalize();
     }
 
     public Vector4f getStart() {
-        return this.start;
+        return new Vector4f(this.start);
     }
 
     public Vector4f getDirection() {
-        return this.direction;
+        return new Vector4f(this.direction);
     }
 
-    public void mul(Matrix4f transform) {
-        this.start = transform.invert().transform(this.start);
-        this.direction = transform.invert().transform(this.direction).normalize();
+    public void viewToWorld(Matrix4f transform) {
+        Matrix4f t = new Matrix4f();
+        transform.invert(t);
+        this.start = t.transform(this.start);
+        this.direction = t.transform(this.direction);
+        this.direction.normalize();
     }
 }

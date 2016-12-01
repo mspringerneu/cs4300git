@@ -34,7 +34,8 @@
     </light>
         <transform>
             <set>
-                <translate> 0 0 0 </translate>
+                <translate>0 0 0 </translate>
+                <rotate>45 0 1 0</rotate>
                 <scale>1 1 1</scale>
             </set>
             <object instanceof="box">
