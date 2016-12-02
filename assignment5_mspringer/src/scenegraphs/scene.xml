@@ -8,7 +8,7 @@
 
 
     <light>
-        <ambient>0.8 0.8 0.8</ambient>
+        <ambient>1 1 1</ambient>
         <diffuse>0.8 0.8 0.8</diffuse>
         <specular>0.8 0.8 0.8</specular>
         <position>-60 10 0 </position>
@@ -17,7 +17,7 @@
     </light>
 
     <light>
-        <ambient>0.2 0.2 0.2</ambient>
+        <ambient>0.4 0.4 0.4</ambient>
         <diffuse>0.4 0.4 0.4</diffuse>
         <specular>0.4 0.4 0.4</specular>
         <position>0 100 0 </position>
@@ -25,7 +25,7 @@
         <spotdirection>0 -1 0 </spotdirection>
     </light>
     <light>
-        <ambient>0.2 0.2 0.2</ambient>
+        <ambient>0.4 0.4 0.4</ambient>
         <diffuse>0.4 0.4 0.4</diffuse>
         <specular>0.4 0.4 0.4</specular>
         <position>100 100 -100 </position>

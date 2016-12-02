@@ -22,6 +22,7 @@ import java.util.Stack;
 import java.util.List;
 import raytrace.Ray3D;
 import raytrace.HitRecord;
+import util.Light;
 import util.Material;
 import util.ObjectInstance;
 
@@ -130,8 +131,7 @@ public class View {
                 int r, g, b;
                 Vector4f outColor = new Vector4f(1,1,1,0);
                 if (hits.size() > 0) {
-                    Material mat = hits.get(0).getMaterial();
-                    outColor = mat.getAmbient();
+                    outColor = shade(hits.get(0));
                     System.out.println("Hit at Point (" + i + "," + j + ")!");
                 }
                 Color color = new Color(outColor.x, outColor.y, outColor.z);
@@ -203,6 +203,93 @@ public class View {
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not write raytraced image!");
         }
+    }
+
+    public Vector4f shade(HitRecord hit) {
+        Vector4f outColor = new Vector4f(0,0,0,0);
+        Vector3f lightVec,viewVec,reflectVec;
+        Vector3f normalView;
+        Vector3f ambient,diffuse,specular;
+        float nDotL,rDotV;
+
+        // initialize object variables
+        Matrix4f transform = hit.getTransform();
+        Matrix4f invTranspose = new Matrix4f(transform).invert().transpose();
+        Vector4f fPosition = hit.getIntersectionIn();
+        transform.transform(fPosition);
+        Vector4f fNormal = hit.getNormalIn();
+        invTranspose.transform(fNormal);
+        Material mat = hit.getMaterial();
+        Vector3f matAmb = new Vector3f(mat.getAmbient().x, mat.getAmbient().y, mat.getAmbient().z);
+        Vector3f matDiff = new Vector3f(mat.getDiffuse().x, mat.getDiffuse().y, mat.getDiffuse().z);
+        Vector3f matSpec = new Vector3f(mat.getSpecular().x, mat.getSpecular().y, mat.getSpecular().z);
+        float matAbs = mat.getAbsorption(), matRefl = mat.getReflection(), matRefr = mat.getRefractiveIndex(), matShin = mat.getShininess(), matTrans = mat.getTransparency();
+
+
+        // initialize light variables
+        Light light;
+        Vector4f lightPos, lightSpotDir;
+        Vector3f lightAmb, lightDiff, lightSpec;
+        float lightSpotAng;
+
+
+        Vector4f fColor = new Vector4f(0,0,0,0);
+
+        int numLights = lights.size();
+
+        for (int i=0;i<numLights;i++)
+        {
+            light = lights.get(i);
+            lightPos = light.getPosition();
+            lightSpotDir = light.getSpotDirection();
+            lightAmb = light.getAmbient();
+            lightDiff = light.getDiffuse();
+            lightSpec = light.getSpecular();
+            lightSpotAng = light.getSpotCutoff();
+
+            if (lightPos.w!=0) {
+                lightVec = new Vector3f(lightPos.x - fPosition.x,
+                        lightPos.y - fPosition.y,
+                        lightPos.z - fPosition.z).normalize();
+            }
+            else {
+                lightVec = new Vector3f(-lightPos.x, -lightPos.y, -lightPos.z).normalize();
+            }
+
+            Vector3f spotdirection = new Vector3f(lightSpotDir.x, lightSpotDir.y, lightSpotDir.z).normalize();
+            if (-lightVec.dot(spotdirection) < (float)(Math.cos(Math.toRadians(lightSpotAng)))) {
+                continue;
+            }
+
+            Vector3f tNormal = new Vector3f(fNormal.x, fNormal.y, fNormal.z);
+            normalView = new Vector3f(tNormal).normalize();
+
+
+            nDotL = normalView.dot(lightVec);
+
+            viewVec = new Vector3f(-fPosition.x, -fPosition.y, -fPosition.z).normalize();
+
+            reflectVec = new Vector3f(lightVec).negate().reflect(normalView).normalize();
+
+            rDotV = (float)(Math.max(reflectVec.dot(viewVec),0.0));
+
+            ambient = matAmb.mul(lightAmb);
+            diffuse = matDiff.mul(lightDiff).mul((float)Math.max(nDotL, 0));
+            if (nDotL>0) {
+                specular = matSpec.mul(lightSpec).mul((float)(Math.pow(rDotV, matShin)));
+            }
+            else {
+                specular = new Vector3f(0,0,0);
+            }
+            fColor = fColor.add(new Vector4f(new Vector3f(ambient.add(diffuse).add(specular)),1.0f)).normalize();
+            /*
+            float maxColor = (float)(Math.max(fColor.x, Math.max(fColor.y, fColor.z)));
+            fColor.div(maxColor);
+            fColor.mul(255);
+            */
+
+        }
+        return fColor;
     }
 
 
@@ -312,6 +399,8 @@ public class View {
 
         modelView = new Matrix4f().lookAt(new Vector3f(70, 100, -80f), new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
         modelViews.push(new Matrix4f().mul(modelView));
+
+        lights = scenegraph.getLights(modelViews);
 
         if (raytrace) {
             raytrace(WINDOW_WIDTH, WINDOW_HEIGHT, modelViews);

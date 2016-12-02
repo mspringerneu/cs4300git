@@ -113,7 +113,7 @@ public interface IScenegraph<VertexType extends IVertexData>
      */
     List<HitRecord> raycast(Ray3D ray, Stack<Matrix4f> transforms);
 
-    List<Light> getLights();
+    List<Light> getLights(Stack<Matrix4f> modelViews);
 
     void dispose();
 }

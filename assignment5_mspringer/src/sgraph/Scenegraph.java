@@ -153,7 +153,8 @@ public class Scenegraph<VertexType extends IVertexData> implements IScenegraph<V
   }
 
   @Override
-  public List<Light> getLights() {
-      List<Light> lights = new ArrayList<Light>();
+  public List<Light> getLights(Stack<Matrix4f> modelViews) {
+      List<Light> lights = root.getLightsInView(modelViews);
+      return lights;
   }
 }
