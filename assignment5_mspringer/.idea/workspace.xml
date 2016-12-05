@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0954c052-5118-4c90-b2c9-4c0694124125" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scenegraphs/helicopter.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scenegraphs/humanoid-YMCA.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scenegraphs/humanoid.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scenegraphs/two-humanoids.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/raytrace.png" afterPath="$PROJECT_DIR$/output/raytrace.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/View.java" afterPath="$PROJECT_DIR$/src/View.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scenegraphs/scene.xml" afterPath="$PROJECT_DIR$/src/scenegraphs/scene.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/sgraph/IScenegraph.java" afterPath="$PROJECT_DIR$/src/sgraph/IScenegraph.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/sgraph/Scenegraph.java" afterPath="$PROJECT_DIR$/src/sgraph/Scenegraph.java" />
     </list>
     <ignored path="assignment5_mspringer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -819,7 +810,14 @@
       <option name="project" value="LOCAL" />
       <updated>1480632737073</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Working Shading">
+      <created>1480638684310</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1480638684310</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -833,7 +831,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32863188" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32863188" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -899,7 +897,8 @@
     <MESSAGE value="Raytrace Testing #2" />
     <MESSAGE value="Raytrace collision for box object" />
     <MESSAGE value="Working RayTrace for Box and Sphere objects" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working RayTrace for Box and Sphere objects" />
+    <MESSAGE value="Working Shading" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working Shading" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
