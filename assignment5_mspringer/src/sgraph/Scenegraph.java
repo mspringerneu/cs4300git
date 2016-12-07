@@ -99,8 +99,13 @@ public class Scenegraph<VertexType extends IVertexData> implements IScenegraph<V
   public void draw(Stack<Matrix4f> modelView) {
     if ((root != null) && (renderer != null)) {
       List<Light> listOfLights = root.getLightsInView(modelView);
+        System.out.println(listOfLights);
       renderer.initLightsInShader(listOfLights);
       renderer.draw(root, modelView);
+        System.out.println("Scenegraph draw succeeded");
+    }
+    else {
+        System.out.println("Scenegraph draw failed");
     }
   }
 

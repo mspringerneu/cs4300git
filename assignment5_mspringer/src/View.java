@@ -138,7 +138,7 @@ public class View {
                 if (i % 10 == 0 && j % 10 == 0) {
                     // System.out.println("Color at Point (" + i + "," + j + ") is: " + color.toString());
                 }
-                output.setRGB(width - i - 1, height - j - 1, color.getRGB());
+                output.setRGB(i, height - j - 1, color.getRGB());
             }
         }
 
@@ -273,10 +273,10 @@ public class View {
 
             rDotV = (float)(Math.max(reflectVec.dot(viewVec),0.0));
 
-            ambient = matAmb.mul(lightAmb);
-            diffuse = matDiff.mul(lightDiff).mul((float)Math.max(nDotL, 0));
+            ambient = lightAmb.mul(matAmb);
+            diffuse = lightDiff.mul(matDiff).mul((float)Math.max(nDotL, 0));
             if (nDotL>0) {
-                specular = matSpec.mul(lightSpec).mul((float)(Math.pow(rDotV, matShin)));
+                specular = lightSpec.mul(matSpec).mul((float)(Math.pow(rDotV, matShin)));
             }
             else {
                 specular = new Vector3f(0,0,0);

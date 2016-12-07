@@ -174,7 +174,12 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
         }
         if (objectname.length() > 0) {
           node = new sgraph.LeafNode(objectname, scenegraph, name);
-          node.setTextureName(textureName);
+            if (textureName.length() > 0) {
+                node.setTextureName(textureName);
+            }
+            else {
+                node.setTextureName("white");
+            }
           try {
             stackNodes.peek().addChild(node);
           } catch (IllegalArgumentException e) {

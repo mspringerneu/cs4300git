@@ -1,0 +1,235 @@
+<scene>
+	<instance name="sphere" path="models/sphere.obj" />
+	<instance name="box" path="models/box.obj" />
+	<instance name="cylinder" path="models/cylinder.obj" />
+	<instance name="cone" path="models/cone.obj" />
+
+	<transform name="whole-heli-transform">
+		<set>
+			<scale> 5 5 5 </scale>
+		</set>
+		<group name="whole-heli">
+			<group name="body">
+				<transform name="hull">
+					<set>
+						<scale>32 18 18</scale>
+					</set>
+					<object instanceof="sphere">
+						<material>
+							<color>1 1 0</color>
+						</material>
+					</object>
+				</transform>
+				<transform name = "tail-transform">
+					<set>
+						<translate>-15 0 0</translate>
+					</set>
+					<group name="tail">
+						<transform name="tail">
+							<set>
+								<rotate>90 0 0 1</rotate>
+								<scale>15 75 15</scale>
+							</set>
+							<object instanceof="cone">
+								<material>
+									<color>1 1 0</color>
+								</material>
+							</object>
+						</transform>
+						<transform name="tail-end">
+							<set>
+								<translate>-65 8 0</translate>
+								<rotate>30 0 0 1</rotate>
+								<scale>12 18 2</scale>
+							</set>
+							<object instanceof="box">
+								<material>
+									<color>1 1 0</color>
+								</material>
+							</object>
+						</transform>
+					</group>
+
+				</transform>
+				<transform name="legs-transform">
+					<set>
+						<translate>0 -16 0</translate>
+					</set>
+					<group name = "legs">
+						<group name="left-leg">
+							<transform name="front-left-bar">
+								<set>
+									<translate>10 0 -10</translate>
+									<rotate>30 1 0 0</rotate>
+									<scale>2 8 2</scale>
+								</set>
+								<object instanceof="box">
+									<material>
+										<color>0 1 0</color>
+									</material>
+								</object>
+							</transform>
+							<transform name="back-left-bar">
+								<set>
+									<translate>-10 0 -10</translate>
+									<rotate>30 1 0 0</rotate>
+									<scale>2 8 2</scale>
+								</set>
+								<object instanceof="box">
+									<material>
+										<color>0 1 0</color>
+									</material>
+								</object>
+							</transform>
+							<transform name="bottom-left-bar">
+								<set>
+									<translate>0 -4 -12</translate>
+									<scale>40 2 2</scale>
+								</set>
+								<object instanceof="box">
+									<material>
+										<color>0 1 0</color>
+									</material>
+								</object>
+							</transform>
+						</group>
+						<group name="right-leg">
+							<transform name="front-right-bar">
+								<set>
+									<translate>10 0 10</translate>
+									<rotate>-30 1 0 0</rotate>
+									<scale>2 8 2</scale>
+								</set>
+								<object instanceof="box">
+									<material>
+										<color>0 1 0</color>
+									</material>
+								</object>
+							</transform>
+							<transform name="back-right-bar">
+								<set>
+									<translate>-10 0 10</translate>
+									<rotate>-30 1 0 0</rotate>
+									<scale>2 8 2</scale>
+								</set>
+								<object instanceof="box">
+									<material>
+										<color>0 1 0</color>
+									</material>
+								</object>
+							</transform>
+							<transform name="bottom-right-bar">
+								<set>
+									<translate>0 -4 12</translate>
+									<scale>40 2 2</scale>
+								</set>
+								<object instanceof="box">
+									<material>
+										<color>0 1 0</color>
+									</material>
+								</object>
+							</transform>
+						</group>
+					</group>
+				</transform>
+			</group>
+            <transform name="main-rotor-transform">
+                <set>
+                    <translate>0 17 0</translate>
+                </set>
+
+                <group name="main-rotor">
+                    <transform name="main-rotor-axle">
+                        <set>
+                            <scale>4 4 4</scale>
+                        </set>
+                        <object instanceof="cylinder">
+                            <material>
+                                <color>0 1 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                    <transform name="main-rotor-prop-a">
+                        <set>
+                            <translate>0 4 0</translate>
+                            <rotate>45 0 1 0</rotate>
+                            <scale>90 2 2</scale>
+                        </set>
+                        <object instanceof="box">
+                            <material>
+                                <color>0 1 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                    <transform name="main-rotor-prop-b">
+                        <set>
+                            <translate>0 4 0</translate>
+                            <rotate>-45 0 1 0</rotate>
+                            <scale>90 2 2</scale>
+                        </set>
+                        <object instanceof="box">
+                            <material>
+                                <color>0 1 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                </group>
+            </transform>
+            <transform name="rear-rotor-transform">
+                <set>
+                    <translate>-81 12 -4</translate>
+                </set>
+                <group name="rear-rotor">
+                    <transform name="rear-axle">
+                        <set>
+                            <translate>0 0 0</translate>
+                            <rotate>90 1 0 0</rotate>
+                            <scale>2 2 2</scale>
+                        </set>
+                        <object instanceof="cylinder">
+                            <material>
+                                <color>0 1 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                    <transform name="rear-prop-a">
+                        <set>
+                            <rotate>45 0 0 1</rotate>
+                            <scale>22 2 1</scale>
+                        </set>
+                        <object instanceof="box">
+                            <material>
+                                <color>0 1 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                    <transform name="rear-prop-b">
+                        <set>
+                            <rotate>-45 0 0 1</rotate>
+                            <scale>22 2 1</scale>
+                        </set>
+                        <object instanceof="box">
+                            <material>
+                                <color>0 1 1</color>
+                            </material>
+                        </object>
+                    </transform>
+                </group>
+            </transform>
+		</group>
+	</transform>
+	<!--
+        <transform>
+            <set>
+            <translate> 0 25 0 </translate>
+            <scale> 50 50 50 </scale>
+            </set>
+            <group>
+                <object instanceof="cone">
+                    <material>
+                    <color> 1 0 0 </color>
+                    </material>
+                </object>
+            </group>
+        </transform> -->
+</scene>
