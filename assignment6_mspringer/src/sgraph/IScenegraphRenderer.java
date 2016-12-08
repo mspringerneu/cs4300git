@@ -9,6 +9,7 @@ import util.TextureImage;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import org.joml.Vector4f;
 
 /**
  * This interface provides a general interface for the scene graph to use. Each
@@ -92,5 +93,5 @@ public interface IScenegraphRenderer {
 
   void dispose();
 
-    TextureImage getTexture(String name);
+    Vector4f getTextureColor(String name, float s, float t);
 }

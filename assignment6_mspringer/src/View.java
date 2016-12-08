@@ -131,15 +131,16 @@ public class View {
                 //get color in (r,g,b)
 
                 int r, g, b;
-                Vector4f outColor = new Vector4f(1,1,1,0);
+                Vector4f outColor;
                 if (hits.size() > 0) {
-                    outColor = shade(hits.get(0));
+                    outColor = shade(hits.get(0), 0);
                     System.out.println("Hit at Point (" + i + "," + j + ")!");
                 }
-                Color color = new Color(outColor.x, outColor.y, outColor.z);
-                if (i % 10 == 0 && j % 10 == 0) {
-                    // System.out.println("Color at Point (" + i + "," + j + ") is: " + color.toString());
+                else {
+                    outColor = new Vector4f(0,0,0,1f);
                 }
+                outColor = clamp(outColor);
+                Color color = new Color(outColor.x, outColor.y, outColor.z);
                 output.setRGB(i, height - j - 1, color.getRGB());
             }
         }
@@ -207,23 +208,27 @@ public class View {
         }
     }
 
-    public Vector4f shade(HitRecord hit) {
+    public Vector4f shade(HitRecord hit, int reflectionNum) {
+        int maxReflections;
         Vector4f outColor = new Vector4f(0,0,0,0);
         Vector3f lightVec,viewVec,reflectVec;
         Vector3f normalView;
         Vector3f ambient,diffuse,specular;
         float nDotL,rDotV;
-        TextureImage texImg;
-        Vector4f texCoord, lightVec4;
+        String texName;
+        Vector4f texCoord, lightVec4, fColor, texColor, reflectVec4, refColor, refTexColor;
         List<HitRecord> lightHits = new ArrayList<HitRecord>();
-        Ray3D rayToLight;
+        List<HitRecord> reflectHits = new ArrayList<HitRecord>();
+        Ray3D rayToLight, reflectRay;
         Stack<Matrix4f> mVs;
-        Matrix4f mV
+        Matrix4f mV, reflection;
+        boolean reflectedHit = false;
 
         // initialize object variables
         Matrix4f transform = hit.getTransform();
         Matrix4f invTranspose = new Matrix4f(transform).invert().transpose();
         Vector4f fPosition = hit.getIntersectionIn();
+        // obj -> view transform
         transform.transform(fPosition);
         Vector4f fNormal = hit.getNormalIn();
         invTranspose.transform(fNormal);
@@ -240,17 +245,30 @@ public class View {
         Vector3f lightAmb, lightDiff, lightSpec;
         float lightSpotAng;
 
-        texImg = scenegraph.getTexture(hit.getTextureName());
+        fColor = new Vector4f(0f,0f,0f,1f);
+        refColor = new Vector4f(0f,0f,0f,1f);
+
+        texName = hit.getTextureName();
+        System.out.println(texName);
         texCoord = hit.getTexCoord();
-        Vector4f fColor = texImg.getColor(texCoord.x, texCoord.y);
+        if (texName.length() > 0) {
+            texColor = new Vector4f(scenegraph.getTextureColor(texName, texCoord.x, texCoord.y));
+        }
+        else {
+            texColor = new Vector4f(1f,1f,1f,1f);
+        }
+        System.out.println("Texture: " + texName);
+
+        System.out.println("Texture Color: " + fColor);
+        System.out.println("Texture Coordinate: (" + texCoord.x + ", " + texCoord.y + ")");
 
         int numLights = lights.size();
 
         mVs = new Stack<Matrix4f>();
         mV = new Matrix4f().mul(worldToView);
+        mVs.push(mV);
 
-        for (int i=0;i<numLights;i++)
-        {
+        for (int i=0;i<numLights;i++) {
             light = lights.get(i);
             lightPos = light.getPosition();
             lightSpotDir = light.getSpotDirection();
@@ -259,58 +277,91 @@ public class View {
             lightSpec = light.getSpecular();
             lightSpotAng = light.getSpotCutoff();
 
+            maxReflections = 0;
 
 
-            if (lightPos.w!=0) {
+            if (lightPos.w != 0) {
                 lightVec = new Vector3f(lightPos.x - fPosition.x,
                         lightPos.y - fPosition.y,
                         lightPos.z - fPosition.z).normalize();
-            }
-            else {
+            } else {
                 lightVec = new Vector3f(-lightPos.x, -lightPos.y, -lightPos.z).normalize();
             }
 
-            lightVec4 = new Vector4f(lightVec, 0f);
+            lightVec4 = new Vector4f(lightVec, 0f).normalize();
 
             rayToLight = new Ray3D(fPosition, lightVec4);
 
-            rayToLight.viewToWorld(transform);
+            lightHits = scenegraph.raycast(rayToLight, mVs);
 
-            Vector3f spotdirection = new Vector3f(lightSpotDir.x, lightSpotDir.y, lightSpotDir.z).normalize();
-            if (-lightVec.dot(spotdirection) < (float)(Math.cos(Math.toRadians(lightSpotAng)))) {
+            if (lightHits.size() > 0) {
                 continue;
             }
-
-            Vector3f tNormal = new Vector3f(fNormal.x, fNormal.y, fNormal.z);
-            normalView = new Vector3f(tNormal).normalize();
-
-
-            nDotL = normalView.dot(lightVec);
-
-            viewVec = new Vector3f(-fPosition.x, -fPosition.y, -fPosition.z).normalize();
-
-            reflectVec = new Vector3f(lightVec).negate().reflect(normalView).normalize();
-
-            rDotV = (float)(Math.max(reflectVec.dot(viewVec),0.0));
-
-            ambient = lightAmb.mul(matAmb);
-            diffuse = lightDiff.mul(matDiff).mul((float)Math.max(nDotL, 0));
-            if (nDotL>0) {
-                specular = lightSpec.mul(matSpec).mul((float)(Math.pow(rDotV, matShin)));
-            }
             else {
-                specular = new Vector3f(0,0,0);
-            }
-            //fColor = fColor.add(new Vector4f(new Vector3f(ambient).add(diffuse),1.0f));//.add(diffuse).add(specular)),1.0f)).normalize();
-            fColor = fColor.add(new Vector4f(new Vector3f(ambient).add(diffuse).add(specular),1.0f));
+
+                Vector3f spotdirection = new Vector3f(lightSpotDir.x, lightSpotDir.y, lightSpotDir.z).normalize();
+                if (-lightVec.dot(spotdirection) < (float) (Math.cos(Math.toRadians(lightSpotAng)))) {
+                    continue;
+                }
+
+                Vector3f tNormal = new Vector3f(fNormal.x, fNormal.y, fNormal.z);
+                normalView = new Vector3f(tNormal).normalize();
+
+
+                nDotL = normalView.dot(lightVec);
+
+                viewVec = new Vector3f(-fPosition.x, -fPosition.y, -fPosition.z).normalize();
+
+                reflectVec = new Vector3f(lightVec).negate().reflect(normalView).normalize();
+
+                reflectVec4 = new Vector4f(reflectVec, 0f).normalize();
+
+                rDotV = (float) (Math.max(reflectVec.dot(viewVec), 0.0));
+
+                refColor = new Vector4f(1f,1f,1f,1f);
+
+                ambient = lightAmb.mul(matAmb);
+                diffuse = lightDiff.mul(matDiff).mul((float) Math.max(nDotL, 0));
+                if (nDotL > 0) {
+                    specular = lightSpec.mul(matSpec).mul((float) (Math.pow(rDotV, matShin)));
+                } else {
+                    specular = new Vector3f(0, 0, 0);
+                }
+                //fColor = fColor.add(new Vector4f(new Vector3f(ambient).add(diffuse),1.0f));//.add(diffuse).add(specular)),1.0f)).normalize();
+                fColor = fColor.add(new Vector4f(new Vector3f(ambient).add(diffuse).add(specular), 1.0f));
+
+                /*
+                if(reflectionNum <= maxReflections) {
+                    refColor = new Vector4f(1f,1f,1f,1f);
+                    reflectRay = new Ray3D(fPosition, reflectVec4);
+                    reflectHits = scenegraph.raycast(reflectRay, mVs);
+                    if (reflectHits.size() > 0) {
+                        reflectedHit = true;
+                        refColor = refColor.add(shade(reflectHits.get(0), reflectionNum + 1));
+                    }
+                }
+                */
+
+
+
+
+
             /*
             float maxColor = (float)(Math.max(fColor.x, Math.max(fColor.y, fColor.z)));
             fColor.div(maxColor);
             fColor.mul(255);
             */
 
+            }
         }
-        fColor = clamp(fColor);
+        fColor = texColor.mul(fColor);
+        /*
+        if (reflectedHit) {
+            clamp(refColor);
+            //Cp = a * Color from shading + r * Color from reflection
+            fColor = fColor.mul(matAbs).add(refColor.mul(matRefl));
+        }
+        */
         return fColor;
     }
 
@@ -391,7 +442,7 @@ public class View {
 
         util.TextureImage textureImage;
 
-        textureImage = new util.TextureImage("textures/die.png",
+        textureImage = new util.TextureImage("textures/die-box.png",
                 "png",
                 "white");
 
@@ -430,7 +481,8 @@ public class View {
             modelViews.pop();
         }
 
-        modelViews.push(new Matrix4f().mul(worldToView));
+        modelView = new Matrix4f(worldToView);
+        modelViews.push(new Matrix4f().mul(modelView));
 
         lights = scenegraph.getLights(modelViews);
 

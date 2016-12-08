@@ -39,7 +39,7 @@ public class HitRecord {
         this.texCoord = new Vector4f();
         this.objType = objType;
         this.intersectFace = "";
-        switch(objType) {
+        switch (objType) {
             case "box":
                 this.intersectFace = getBoxFace(intersectionIn);
                 this.texCoord = getTexCoordBox(intersectionIn);
@@ -56,18 +56,23 @@ public class HitRecord {
             default:
                 break;
         }
+        clampTexCoord();
+    }
+
+    private void clampTexCoord() {
+        this.texCoord.x = Math.min(this.texCoord.x, 1.0f);
+        this.texCoord.y = Math.min(this.texCoord.y, 1.0f);
     }
 
     private Vector4f getTexCoordBox(Vector4f intersection) {
-        Vector4f texCoord = new Vector4f();
         float s, t;
-        switch(this.intersectFace) {
+        switch (this.intersectFace) {
             case "front":
                 s = intersection.x + 0.5f;
                 t = intersection.y + 0.5f;
                 break;
             case "back":
-                s = intersection.x - 0.5f;
+                s = 0.5f - intersection.x;
                 t = intersection.y + 0.5f;
                 break;
             case "left":
@@ -75,29 +80,34 @@ public class HitRecord {
                 t = intersection.y + 0.5f;
                 break;
             case "right":
-                s = intersection.z - 0.5f;
+                s = 0.5f - intersection.z;
                 t = intersection.y + 0.5f;
                 break;
             case "top":
                 s = intersection.x + 0.5f;
-                t = intersection.z - 0.5f;
+                t = 0.5f - intersection.z;
                 break;
             case "bottom":
                 s = intersection.x + 0.5f;
-                t = intersection.z - 0.5f;
+                t = intersection.z + 0.5f;
                 break;
             default:
+                s = 0f;
+                t = 0f;
                 break;
         }
+        Vector4f coord = new Vector4f(s,t,0f,1f);
+        texCoord.x = s;
+        texCoord.y = t;
 
-        return texCoord;
+        return coord;
     }
 
     private Vector4f getTexCoordBoxWrap(Vector4f texCoord) {
         float s = texCoord.x;
         float t = texCoord.y;
-        Vector4f offset = new Vector4f();
-        switch(this.intersectFace) {
+        Vector4f offset = new Vector4f(0f,0f,0f,0f);
+        switch (this.intersectFace) {
             case "front":
                 offset.x = 0.25f;
                 offset.y = 0.25f;
@@ -126,17 +136,21 @@ public class HitRecord {
             case "bottom":
                 offset.x = 0.25f;
                 offset.y = 0.0f;
-                offset.add(s * 0.25f, 0.25f - (t * 0.25f), 0, 0);
+                offset.add(s * 0.25f, t * 0.25f, 0, 0);
                 break;
             default:
                 break;
         }
+        offset.y += 0.25f;
         return offset;
     }
 
     private String getBoxFace(Vector4f intersect) {
         float precision = 0.005f;
-        if (Math.abs(intersect.x) - 0.5f < precision) {
+        float intX = intersect.x;
+        float intY = intersect.y;
+        float intZ = intersect.z;
+        if (Math.abs(Math.abs(intX) - 0.5f) < precision) {
             // right
             if (intersect.x > 0) {
                 return "right";
@@ -145,8 +159,7 @@ public class HitRecord {
             else {
                 return "left";
             }
-        }
-        else if (Math.abs(intersect.y) - 0.5f < precision) {
+        } else if (Math.abs(Math.abs(intY) - 0.5f) < precision) {
             // top
             if (intersect.y > 0) {
                 return "top";
@@ -155,8 +168,7 @@ public class HitRecord {
             else {
                 return "bottom";
             }
-        }
-        else if (Math.abs(intersect.z) - 0.5f < precision) {
+        } else if (Math.abs(Math.abs(intZ) - 0.5f) < precision) {
             // front
             if (intersect.z > 0) {
                 return "front";
@@ -165,13 +177,12 @@ public class HitRecord {
             else {
                 return "back";
             }
-        }
-        else return "edge";
+        } else return "edge";
     }
 
-    private Vector4f getTexCoordSphere (Vector4f intersection) {
+    private Vector4f getTexCoordSphere(Vector4f intersection) {
         float theta, phi, s, t;
-        t = intersection.y + 0.5f;
+        t = (intersection.y / 2) + 0.5f;
         /*
             For sphere of radius 1 and center (0,0,0)
             cross-section at some fixed y':
@@ -179,11 +190,11 @@ public class HitRecord {
             y = cos(phi)
             z = -sin(phi)sin(theta)
          */
-        phi = (float)Math.acos(intersection.y);
-        theta = (float)Math.acos(intersection.x / Math.sin(phi));
-        s = (float)(Math.toDegrees(theta) / 360f);
+        phi = (float) Math.acos(intersection.y);
+        theta = (float) Math.acos(intersection.x / Math.sin(phi));
+        s = (float) (Math.toDegrees(theta) / 360f);
 
-        Vector4f texCoord = new Vector4f(s,t,0f,0f);
+        Vector4f texCoord = new Vector4f(1 * s, 1 * t, 0f, 0f);
 
         return texCoord;
     }
@@ -192,26 +203,41 @@ public class HitRecord {
         return this.tEnter;
     }
 
-    public float getTExit() { return this.tExit; }
+    public float getTExit() {
+        return this.tExit;
+    }
 
     public Vector4f getIntersectionIn() {
         return new Vector4f(this.intersectionIn);
     }
+
     public Vector4f getIntersectionOut() {
         return new Vector4f(this.intersectionOut);
     }
+
     public Vector4f getNormalIn() {
         return new Vector4f(this.normalIn);
     }
+
     public Vector4f getNormalOut() {
         return new Vector4f(this.normalOut);
     }
+
     public Matrix4f getTransform() {
         return new Matrix4f(this.transform);
     }
-    public String getTextureName() { return this.textureName; }
-    public Vector4f getTexCoord() { return new Vector4f(this.texCoord); }
-    public String getObjType() { return this.objType; }
+
+    public String getTextureName() {
+        return this.textureName;
+    }
+
+    public Vector4f getTexCoord() {
+        return new Vector4f(this.texCoord);
+    }
+
+    public String getObjType() {
+        return this.objType;
+    }
 
     public util.Material getMaterial() {
         return this.material;

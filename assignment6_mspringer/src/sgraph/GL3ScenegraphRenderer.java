@@ -7,6 +7,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.texture.Texture;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import util.IVertexData;
 import util.Light;
@@ -320,7 +321,12 @@ public class GL3ScenegraphRenderer implements IScenegraphRenderer {
   }
 
   @Override
-  public TextureImage getTexture(String name) {
-      return textures.get(name);
+  public Vector4f getTextureColor(String name, float s, float t) {
+      if (textures.containsKey(name)) {
+          return new Vector4f(textures.get(name).getColor(s,t));
+      }
+      else {
+          return new Vector4f(textures.get("white").getColor(s,t));
+      }
   }
 }

@@ -2,13 +2,14 @@
     <instance name="sphere" path="models/sphere"></instance>
     <instance name="box" path="models/box-outside"></instance>
     <image name="white" path="textures/white.png" />
-    <image name="earth" path="textures/earthmap.png" />
-    <image name="dice" path="textures/die.png" />
-    <image name="checkerboard" path="textures/checkerboard-box.png" />
+    <image name="earthmap" path="textures/earthmap.png" />
+    <image name="die-box" path="textures/die-box.png" />
+    <image name="checkerboard-box" path="textures/checkerboard-box.png" />
+    <image name="checkerboard" path="textures/checkerboard.png" />
 
 
     <light>
-        <ambient>0.4 0.4 0.4</ambient>
+        <ambient>0.8 0.8 0.8</ambient>
         <diffuse>0.8 0.8 0.8</diffuse>
         <specular>0.8 0.8 0.8</specular>
         <position>-60 10 0 </position>
@@ -17,7 +18,7 @@
     </light>
 
     <light>
-        <ambient>0.4 0.4 0.4</ambient>
+        <ambient>0.8 0.8 0.8</ambient>
         <diffuse>0.4 0.4 0.4</diffuse>
         <specular>0.4 0.4 0.4</specular>
         <position>0 100 0 </position>
@@ -25,7 +26,7 @@
         <spotdirection>0 -1 0 </spotdirection>
     </light>
     <light>
-        <ambient>0.4 0.4 0.4</ambient>
+        <ambient>0.8 0.8 0.8</ambient>
         <diffuse>0.4 0.4 0.4</diffuse>
         <specular>0.4 0.4 0.4</specular>
         <position>100 100 -100 </position>
@@ -38,7 +39,7 @@
                 <scale>50 50 50</scale>
             </set>
 
-            <object instanceof="sphere" texture="earth">
+            <object instanceof="sphere" texture="earthmap">
                 <material>
                     <ambient> 0.2 0.2 0.2 </ambient>
                     <diffuse> 0.8 0.8 0.8</diffuse>
@@ -54,7 +55,7 @@
                 <scale>40 40 40</scale>
             </set>
 
-            <object instanceof="sphere">
+            <object instanceof="sphere" texture="checkerboard">
                 <material>
                     <ambient> 0.2 0.2 0.1 </ambient>
                     <diffuse> 0.8 0.8 0.1</diffuse>
@@ -93,7 +94,7 @@
                 <rotate> 45 0 1 0 </rotate>
             </set>
 
-            <object instanceof="box" texture="dice">
+            <object instanceof="box" texture="die-box">
                 <material>
                     <ambient> 0.1 0.2 0.2 </ambient>
                     <diffuse> 0.1 0.8 0.8</diffuse>
@@ -143,7 +144,7 @@
                 <translate> 0 -0.5 0 </translate>
             </set>
 
-            <object instanceof="box" texture="checkerboard">
+            <object instanceof="box" texture="checkerboard-box">
                 <material>
                     <ambient> 0.4 0.4 0.4 </ambient>
                     <diffuse> 0.8 0.8 0.8</diffuse>

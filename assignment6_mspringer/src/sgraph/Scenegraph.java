@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL3;
 
 import org.joml.Matrix4f;
 
+import org.joml.Vector4f;
 import util.IVertexData;
 import util.Light;
 import util.PolygonMesh;
@@ -160,13 +161,7 @@ public class Scenegraph<VertexType extends IVertexData> implements IScenegraph<V
   }
 
   @Override
-  public TextureImage getTexture(String name) {
-      try {
-          return this.renderer.getTexture(name);
-      }
-      catch(IllegalArgumentException e) {
-          throw new IllegalArgumentException("Scenegraph renderer not yet initialized!");
-      }
-
+  public Vector4f getTextureColor(String name, float s, float t) {
+      return this.renderer.getTextureColor(name, s, 1f - t);
   }
 }

@@ -3,6 +3,7 @@ package sgraph;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import util.IVertexData;
 import util.Light;
 import util.ShaderProgram;
@@ -118,5 +119,5 @@ public interface IScenegraph<VertexType extends IVertexData>
 
     void dispose();
 
-    TextureImage getTexture(String name);
+    Vector4f getTextureColor(String name, float s, float t);
 }

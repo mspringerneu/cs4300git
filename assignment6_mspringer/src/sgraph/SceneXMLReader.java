@@ -170,6 +170,7 @@ class MyHandler<K extends IVertexData> extends DefaultHandler {
           else if (attributes.getQName(i).equals("texture"))
           {
             textureName = attributes.getValue(i);
+              System.out.println("Adding texture " + textureName);
           }
         }
         if (objectname.length() > 0) {
